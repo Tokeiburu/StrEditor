@@ -1,0 +1,394 @@
+﻿<Styles:TkWindow x:Class="StrEditor.WPF.SettingsDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:Styles="clr-namespace:TokeiLibrary.WPF.Styles;assembly=TokeiLibrary"
+                 xmlns:TokeiLibrary="clr-namespace:TokeiLibrary;assembly=TokeiLibrary"
+                 xmlns:ListView="clr-namespace:TokeiLibrary.WPF.Styles.ListView;assembly=TokeiLibrary"
+                 xmlns:wpf="clr-namespace:StrEditor.WPF"
+                 xmlns:wpf1="clr-namespace:StrEditor.Core"
+                 xmlns:ApplicationConfiguration="clr-namespace:StrEditor.ApplicationConfiguration" xmlns:application="clr-namespace:GrfToWpfBridge.Application;assembly=GrfToWpfBridge"
+				 MaxWidth="470" MinWidth="470" MinHeight="475" MaxHeight="475">
+	<Grid Background="White">
+		<Grid.Resources>
+			<Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource ThemeCheckBoxStyle}">
+				<Setter Property="Foreground" Value="{DynamicResource TextForeground}" />
+				<Setter Property="Margin" Value="3" />
+				<Setter Property="VerticalAlignment" Value="Center" />
+				<Setter Property="HorizontalAlignment" Value="Left" />
+				<Setter Property="ToolTipService.ShowDuration" Value="30000" />
+
+				<Setter Property="ContentTemplate">
+					<Setter.Value>
+						<DataTemplate>
+							<TextBlock Text="{Binding}" x:Name="text"/>
+							<DataTemplate.Triggers>
+								<DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=CheckBox}}" Value="True">
+									<Setter TargetName="text" Property="TextDecorations" Value="Underline"/>
+								</DataTrigger>
+							</DataTemplate.Triggers>
+						</DataTemplate>
+					</Setter.Value>
+				</Setter>
+
+				<Style.Triggers>
+					<Trigger Property="IsMouseOver" Value="True">
+						<Setter Property="Cursor" Value="Hand"/>
+						<Setter Property="Foreground" Value="{DynamicResource MouseOverTextBrush}" />
+					</Trigger>
+				</Style.Triggers>
+			</Style>
+			<Style TargetType="{x:Type ToolTip}">
+				<Setter Property="MaxWidth" Value="350" />
+				<Setter Property="ContentTemplate">
+					<Setter.Value>
+						<DataTemplate>
+							<TextBlock Text="{Binding}" TextWrapping="Wrap" />
+						</DataTemplate>
+					</Setter.Value>
+				</Setter>
+			</Style>
+		</Grid.Resources>
+		<Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        <Border Background="#F7F9FD">
+            <Grid>
+                <TabControl Style="{DynamicResource ResourceKey=TabControlStyled}" Background="White">
+                    <TabItem Header="General" Style="{DynamicResource ResourceKey=TabItemStyled}">
+                        <StackPanel>
+                            <StackPanel>
+                                <Label Content="General" FontWeight="Bold" FontSize="16" Margin="3 10 0 5" />
+                                <Rectangle Margin="5 0 5 5" Stroke="#E3E9F1" VerticalAlignment="Stretch" />
+                            </StackPanel>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition MinWidth="200" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+								<Label Content="Display encoding" />
+								<application:EncodingPicker Grid.Column="1" Margin="3" Name="_comboBoxEncoding" IsReadOnly="True" EncodingChanged="_comboBoxEncoding_EncodingChanged" />
+                            </Grid>
+							<StackPanel>
+								<CheckBox IsChecked="{Binding Path=(ApplicationConfiguration:StrEditorConfiguration.ReopenLatestFile), Mode=TwoWay}" Content="Always reopen latest opened file" ToolTip="If checked, when opening the application, the last opened sprite will from the recent files menu will be opened." />
+								<CheckBox IsChecked="{Binding Path=(ApplicationConfiguration:StrEditorConfiguration.ShowUvCoords), Mode=TwoWay}" Content="Show texture coordinates fields" ToolTip="Shows texture coordinates fields." Click="_stateUpdated" />
+								<CheckBox IsChecked="{Binding Path=(ApplicationConfiguration:StrEditorConfiguration.InterpolateNewKey), Mode=TwoWay}" Content="Interpolate new added keys" ToolTip="Adds interpolation to newly added keys by default." />
+								<CheckBox IsChecked="{Binding Path=(ApplicationConfiguration:StrEditorConfiguration.ShowNonInterpolated), Mode=TwoWay}" Content="Show non-interpolated timeline" ToolTip="Shows non-interpolated timeline." Click="_stateUpdated" />
+								<CheckBox IsChecked="{Binding Path=(ApplicationConfiguration:StrEditorConfiguration.UseCascadeForGifs), Mode=TwoWay}" Content="Use cascade layers when importing gifs" ToolTip="Use cascade layers when importing gifs." />
+								<CheckBox IsChecked="{Binding Path=(ApplicationConfiguration:StrEditorConfiguration.AlwaysSaveTexturesWithStr), Mode=TwoWay}" Content="Always save textures alongside the str" ToolTip="When saving the STR file, the textures are copied in the same output directory." />
+								<CheckBox IsChecked="{Binding Path=(ApplicationConfiguration:StrEditorConfiguration.AttemptReconstrustBias), Mode=TwoWay}" Content="Attempt to recover lost str information" ToolTip="This feature will attempt to recover the bias information from the str files which are lost in the conversion process from EZV." />
+								<CheckBox IsChecked="{Binding Path=(ApplicationConfiguration:StrEditorConfiguration.BezierAdjustNodes), Mode=TwoWay}" Content="Adjust bezier curves on adjacent nodes" ToolTip="When creating a new key, this feature will adjust the bezier curves on the surrounding nodes to match the same path as before." />
+								<CheckBox IsChecked="{Binding Path=(ApplicationConfiguration:StrEditorConfiguration.KeepTrackKeyFrameEditorCursor), Mode=TwoWay}" Content="Keep track of the TimelineEditor cursor position" ToolTip="If enabled, undo and redo operations will move the cursor at the last relevant selection." />
+								<CheckBox IsChecked="{Binding Path=(ApplicationConfiguration:StrEditorConfiguration.MustSelectKeyFrameBeforeDragging), Mode=TwoWay}" Content="Must click twice to drag key frame" ToolTip="If enabled, you can only drag a key frame if it's selected first." />
+							</StackPanel>
+                        </StackPanel>
+                    </TabItem>
+                    <TabItem Header="Editor colors" Style="{DynamicResource ResourceKey=TabItemStyled}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0">
+                                <Label Content="Editor colors" FontWeight="Bold" FontSize="16" Margin="3 10 0 5" />
+                                <Rectangle Margin="5 0 5 5" Stroke="#E3E9F1" VerticalAlignment="Stretch" />
+                            </StackPanel>
+                            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                                <Grid>
+	                                <Grid.RowDefinitions>
+		                                <RowDefinition />
+		                                <RowDefinition />
+		                                <RowDefinition />
+		                                <RowDefinition />
+		                                <RowDefinition />
+		                                <RowDefinition />
+		                                <RowDefinition />
+		                                <RowDefinition />
+		                                <RowDefinition />
+		                                <RowDefinition />
+		                                <RowDefinition />
+		                                <RowDefinition />
+		                                <RowDefinition />
+		                                <RowDefinition />
+		                                <RowDefinition />
+		                                <RowDefinition />
+		                                <RowDefinition />
+		                                <RowDefinition />
+		                                <RowDefinition />
+		                                <RowDefinition />
+	                                </Grid.RowDefinitions>
+	                                <Grid.ColumnDefinitions>
+		                                <ColumnDefinition Width="Auto" />
+		                                <ColumnDefinition />
+	                                </Grid.ColumnDefinitions>
+	                                <Label Grid.Row="0" Content="Preview panel background color" ToolTipService.ShowDuration="1000000">
+		                                <Label.ToolTip>
+			                                <TextBlock>
+			                                Change the background color of the Frame Editor control.
+			                                </TextBlock>
+		                                </Label.ToolTip>
+	                                </Label>
+	                                <Label Grid.Row="1" Content="Grid line horizontal color" ToolTipService.ShowDuration="1000000">
+		                                <Label.ToolTip>
+			                                <TextBlock>
+			                                Change the horizontal line color of the Frame Editor control.
+			                                </TextBlock>
+		                                </Label.ToolTip>
+	                                </Label>
+	                                <Label Grid.Row="2" Content="Grid line vertical color" ToolTipService.ShowDuration="1000000">
+		                                <Label.ToolTip>
+			                                <TextBlock>
+			                                Change the vertical line color of the Frame Editor control.
+			                                </TextBlock>
+		                                </Label.ToolTip>
+	                                </Label>
+	                                <Label Grid.Row="3" Content="Selected sprite border color" ToolTipService.ShowDuration="1000000">
+		                                <Label.ToolTip>
+			                                <TextBlock>
+			                                Change the border color of the selected sprite in the Frame Editor control.
+			                                </TextBlock>
+		                                </Label.ToolTip>
+	                                </Label>
+	                                <Label Grid.Row="4" Content="Corner transformation color" ToolTipService.ShowDuration="1000000">
+		                                <Label.ToolTip>
+			                                <TextBlock>
+			                                Change the color of the corner squares from the selected image.
+			                                </TextBlock>
+		                                </Label.ToolTip>
+	                                </Label>
+	                                <Label Grid.Row="5" Content="Selected corner transformation color" ToolTipService.ShowDuration="1000000">
+		                                <Label.ToolTip>
+			                                <TextBlock>
+			                                Change the color of the selected corner square from the selected image.
+			                                </TextBlock>
+		                                </Label.ToolTip>
+	                                </Label>
+	                                <Label Grid.Row="6" Content="Path line color" ToolTipService.ShowDuration="1000000">
+		                                <Label.ToolTip>
+			                                <TextBlock>
+			                                Change the color of the current layer's path line.
+			                                </TextBlock>
+		                                </Label.ToolTip>
+	                                </Label>
+	                                <Label Grid.Row="7" Content="Path node color" ToolTipService.ShowDuration="1000000">
+		                                <Label.ToolTip>
+			                                <TextBlock>
+			                                Change the color of the current layer's path node.
+			                                </TextBlock>
+		                                </Label.ToolTip>
+	                                </Label>
+	                                <Label Grid.Row="8" Content="Path current node color" ToolTipService.ShowDuration="1000000">
+		                                <Label.ToolTip>
+			                                <TextBlock>
+			                                Change the color of the current layer's path node.
+			                                </TextBlock>
+		                                </Label.ToolTip>
+	                                </Label>
+	                                <Label Grid.Row="9" Content="Bezier node color 1" ToolTipService.ShowDuration="1000000">
+		                                <Label.ToolTip>
+			                                <TextBlock>
+			                                Change the color of the current layer's path node.
+			                                </TextBlock>
+		                                </Label.ToolTip>
+	                                </Label>
+	                                <Label Grid.Row="10" Content="Bezier node color 2" ToolTipService.ShowDuration="1000000">
+		                                <Label.ToolTip>
+			                                <TextBlock>
+			                                Change the color of the current layer's path node.
+			                                </TextBlock>
+		                                </Label.ToolTip>
+	                                </Label>
+	                                <Label Grid.Row="11" Content="Bezier line color" ToolTipService.ShowDuration="1000000">
+		                                <Label.ToolTip>
+			                                <TextBlock>
+			                                Change the color of the current layer's path node.
+			                                </TextBlock>
+		                                </Label.ToolTip>
+	                                </Label>
+	                                <Label Grid.Row="12" Content="Layer editor - Ease color" ToolTipService.ShowDuration="1000000">
+		                                <Label.ToolTip>
+			                                <TextBlock>
+			                                Change the color of the current layer's path node.
+			                                </TextBlock>
+		                                </Label.ToolTip>
+	                                </Label>
+	                                <Label Grid.Row="13" Content="Layer editor - Error color" ToolTipService.ShowDuration="1000000">
+		                                <Label.ToolTip>
+			                                <TextBlock>
+			                                Change the color of the current layer's path node.
+			                                </TextBlock>
+		                                </Label.ToolTip>
+	                                </Label>
+	                                <Label Grid.Row="14" Content="Layer editor - Texture animation color" ToolTipService.ShowDuration="1000000">
+		                                <Label.ToolTip>
+			                                <TextBlock>
+			                                Change the color of the current layer's path node.
+			                                </TextBlock>
+		                                </Label.ToolTip>
+	                                </Label>
+	                                <Label Grid.Row="15" Content="Layer editor - Bezier color" ToolTipService.ShowDuration="1000000">
+		                                <Label.ToolTip>
+			                                <TextBlock>
+			                                Change the color of the current layer's path node.
+			                                </TextBlock>
+		                                </Label.ToolTip>
+	                                </Label>
+	                                <Label Grid.Row="16" Content="Select node color" ToolTipService.ShowDuration="1000000">
+		                                <Label.ToolTip>
+			                                <TextBlock>
+			                                Change the color of the current layer's path node.
+			                                </TextBlock>
+		                                </Label.ToolTip>
+	                                </Label>
+                                    
+	                                <wpf:QuickColorSelector x:Name="_colorPreviewPanelBakground" Grid.Row="0" Grid.Column="1" />
+	                                <wpf:QuickColorSelector x:Name="_colorGridLH" Grid.Row="1" Grid.Column="1" />
+	                                <wpf:QuickColorSelector x:Name="_colorGridLV" Grid.Row="2" Grid.Column="1" />
+	                                <wpf:QuickColorSelector x:Name="_colorSpriteBorder" Grid.Row="3" Grid.Column="1" />
+	                                <wpf:QuickColorSelector x:Name="_colorPointTranslationCorner" Grid.Row="4" Grid.Column="1" />
+	                                <wpf:QuickColorSelector x:Name="_colorPointTranslationCornerSelected" Grid.Row="5" Grid.Column="1" />
+	                                <wpf:QuickColorSelector x:Name="_colorPathLine" Grid.Row="6" Grid.Column="1" />
+	                                <wpf:QuickColorSelector x:Name="_colorPathNode" Grid.Row="7" Grid.Column="1" />
+	                                <wpf:QuickColorSelector x:Name="_colorPathCurrentNode" Grid.Row="8" Grid.Column="1" />
+	                                <wpf:QuickColorSelector x:Name="_colorBezierNode1" Grid.Row="9" Grid.Column="1" />
+	                                <wpf:QuickColorSelector x:Name="_colorBezierNode2" Grid.Row="10" Grid.Column="1" />
+	                                <wpf:QuickColorSelector x:Name="_colorBezierPath" Grid.Row="11" Grid.Column="1" />
+	                                <wpf:QuickColorSelector x:Name="_colorLEEase" Grid.Row="12" Grid.Column="1" />
+	                                <wpf:QuickColorSelector x:Name="_colorLEError" Grid.Row="13" Grid.Column="1" />
+	                                <wpf:QuickColorSelector x:Name="_colorLEAnimation" Grid.Row="14" Grid.Column="1" />
+	                                <wpf:QuickColorSelector x:Name="_colorLEBezier" Grid.Row="15" Grid.Column="1" />
+	                                <wpf:QuickColorSelector x:Name="_colorSelectNode" Grid.Row="16" Grid.Column="1" />
+                                </Grid>
+                            </ScrollViewer>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Mouse" Style="{DynamicResource ResourceKey=TabItemStyled}">
+                        <StackPanel>
+                            <StackPanel>
+                                <Label Content="Mouse" FontWeight="Bold" FontSize="16" Margin="3 10 0 5" />
+                                <Rectangle Margin="5 0 5 5" Stroke="#E3E9F1" VerticalAlignment="Stretch" />
+                            </StackPanel>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Row="0" Grid.ColumnSpan="2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto" />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="auto" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="Zoom in" Grid.Row="1" Grid.Column="0" />
+                                    <Label Content="Zoom out" Grid.Row="1" Grid.Column="2" />
+                                    <ComboBox Name="_mz1" Grid.Column="1" Margin="3" Width="100">
+                                        <ComboBoxItem Content="Scroll up" />
+                                        <ComboBoxItem Content="Scroll down" />
+                                    </ComboBox>
+                                    <ComboBox Name="_mz2" Grid.Column="3" Margin="3" Width="100">
+                                        <ComboBoxItem Content="Scroll up" />
+                                        <ComboBoxItem Content="Scroll down" />
+                                    </ComboBox>
+                                </Grid>
+                                <Label Content="Fixed scaling" Grid.Row="1" />
+                                <Label Content="Ctrl-Alt-Left Mouse Button" Grid.Row="1" Grid.Column="1" />
+                                <Label Content="Horizontal scaling" Grid.Row="2" />
+                                <Label Content="Ctrl-Shift-Left Mouse Button" Grid.Row="2" Grid.Column="1" />
+                                <Label Content="Vertical scaling" Grid.Row="3" />
+                                <Label Content="Ctrl-Shift-Left Mouse Button" Grid.Row="3" Grid.Column="1" />
+                                <Label Content="Unbound scaling" Grid.Row="4" />
+                                <Label Content="Ctrl-Left Mouse Button" Grid.Row="4" Grid.Column="1" />
+                                <Label Content="Translate" Grid.Row="5" />
+                                <Label Content="Left Mouse Button" Grid.Row="5" Grid.Column="1" />
+                                <Label Content="Rotate" Grid.Row="6" />
+                                <Label Content="Shift-Left Mouse Button" Grid.Row="6" Grid.Column="1" />
+                                <Label Content="Preview panel move" Grid.Row="7" />
+                                <Label Content="Right Mouse Button" Grid.Row="7" Grid.Column="1" />
+                            </Grid>
+                        </StackPanel>
+                    </TabItem>
+                    <TabItem Header="Debugger" Style="{DynamicResource ResourceKey=TabItemStyled}">
+                        <StackPanel>
+                            <StackPanel>
+                                <Label Content="Debugger" FontWeight="Bold" FontSize="16" Margin="3 10 0 5" />
+                                <Rectangle Margin="5 0 5 5" Stroke="#E3E9F1" VerticalAlignment="Stretch" />
+                            </StackPanel>
+							<StackPanel>
+								<CheckBox IsChecked="{Binding Path=(TokeiLibrary:Configuration.LogAnyExceptions), Mode=TwoWay}" Content="Log any exceptions (debug.log)" ToolTip="If enabled, all exceptions will be logged in the debug.log (found in the roaming folder)." />
+							</StackPanel>
+						</StackPanel>
+                    </TabItem>
+                    <TabItem Header="Shortcuts" Style="{DynamicResource ResourceKey=TabItemStyled}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <StackPanel Focusable="True" FocusVisualStyle="{x:Null}">
+                                <Label Content="Shortcuts" FontWeight="Bold" FontSize="16" Margin="3 10 0 5" />
+                                <Rectangle Margin="5 0 5 5" Stroke="#E3E9F1" VerticalAlignment="Stretch" />
+                                <WrapPanel>
+                                    <Styles:FancyButton x:Name="_fbResetShortcuts" Click="_fbResetShortcuts_Click" HorizontalAlignment="Left" TextHeader="Reset" TextDescription="Reset all shortcuts" />
+                                    <Styles:FancyButton x:Name="_fbRefreshhortcuts" Click="_fbRefreshhortcuts_Click" HorizontalAlignment="Left" TextHeader="Update" TextDescription="Look for new loaded shortcuts" />
+                                </WrapPanel>
+                                <Rectangle Margin="5" Stroke="#E3E9F1" VerticalAlignment="Stretch" />
+                                <DockPanel>
+                                    <Label Content="Search" />
+                                    <TextBox Name="_tbSearch" Margin="2" TextChanged="_tbSearch_TextChanged" />
+                                </DockPanel>
+                            </StackPanel>
+                            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Focusable="True" FocusVisualStyle="{x:Null}">
+                                <Grid Name="_gridShortcuts" Focusable="True" FocusVisualStyle="{x:Null}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="auto" />
+                                        <RowDefinition Height="auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                </Grid>
+                            </ScrollViewer>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+            </Grid>
+        </Border>
+		<Grid Name="_gridActionPresenter" TokeiLibrary:WpfProperties.IsDraggable="True" Grid.Row="1" Height="50" Background="{DynamicResource UIDialogBackground}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+            <DockPanel HorizontalAlignment="Right" Margin="0 0 3 0" Grid.Column="1">
+                <Button Name="_buttonOk" Click="_buttonOk_Click" Content="Ok" Height="25" Margin="3" MinWidth="100" />
+            </DockPanel>
+        </Grid>
+    </Grid>
+</Styles:TkWindow>

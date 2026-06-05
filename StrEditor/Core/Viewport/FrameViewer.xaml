@@ -1,0 +1,26 @@
+﻿<UserControl x:Class="StrEditor.Core.Viewport.FrameViewer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" SnapsToDevicePixels="True"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" Focusable="true"
+             xmlns:Styles="clr-namespace:TokeiLibrary.WPF.Styles;assembly=TokeiLibrary"
+             xmlns:openTk="clr-namespace:OpenTK;assembly=OpenTK.GLControl"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300" FocusVisualStyle="{x:Null}">
+	<Grid>
+		<ProgressBar MaxWidth="10" MaxHeight="10" Value="1" Opacity="0" />
+		<WindowsFormsHost Name="_host">
+			<openTk:GLControl x:Name="_primary"
+						  MouseDown="_framePreview_MouseDown"
+						  MouseMove="_framePreview_MouseMove"
+						  MouseUp="_framePreview_MouseUp"
+						  MouseWheel="_framePreview_MouseWheel" />
+		</WindowsFormsHost>
+		<Grid Name="_crashGrid" Background="LightGray" Visibility="Collapsed">
+			<StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+				<Button Name="_btnResume" Width="100" Height="24" Content="Resume" Click="_btnResume_Click" Margin="3" />
+				<TextBlock Text="A exception occured while rendering the STR. To prevent an infinite loop, the rendering thread has been paused. Click on a different map or model and then press 'Resume' to continue." TextWrapping="Wrap" MaxWidth="200" VerticalAlignment="Bottom" Foreground="Black" />
+			</StackPanel>
+		</Grid>
+	</Grid>
+</UserControl>

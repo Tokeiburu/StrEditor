@@ -1,0 +1,118 @@
+﻿<UserControl x:Class="StrEditor.Core.TimelineEditor.Controls.Editor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:keyframeEditor="clr-namespace:StrEditor.Core.TimelineEditor"
+             xmlns:styles="clr-namespace:TokeiLibrary.WPF.Styles;assembly=TokeiLibrary" xmlns:controls="clr-namespace:StrEditor.Core.TimelineEditor.Controls"
+			 mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300" SnapsToDevicePixels="True">
+    <Grid Name="_mainGrid" PreviewKeyDown="_mainGrid_PreviewKeyDown">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="72" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="25" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0" Grid.RowSpan="1000" Background="#E7E7E7" />
+            <Border BorderThickness="0 0 1 1" BorderBrush="#7F7F7F">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Button Name="_bZoomIn" Content="+" Width="20" Margin="0 0 3 0" Height="20" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                    <Button Name="_bZoomOut" Grid.Column="1" Content="-" Width="20" Margin="3 0 0 0" Height="20" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                </Grid>
+            </Border>
+
+            <!-- Layer headers part -->
+            <Grid Grid.Row="1" Grid.Column="0">
+				<ScrollViewer Name="_svLayerHeaders" PreviewMouseWheel="_svMoveLayers_PreviewMouseWheel" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" FocusVisualStyle="{x:Null}">
+					<Grid Name="_layersGrid" Grid.Row="0" Grid.Column="0" Background="Transparent">
+						<Grid.ContextMenu>
+							<ContextMenu>
+								<styles:TkMenuItem x:Name="_miLayerDelete" Click="_miLayerDelete_Click" HeaderText="Delete" InputGestureText="Alt-Delete" IconPath="delete.png" />
+								<styles:TkMenuItem x:Name="_miLayerInsertAbove" Click="_miLayerInsertAbove_Click" HeaderText="Insert above" InputGestureText="Ctrl-U" IconPath="delete.png" />
+								<styles:TkMenuItem x:Name="_miLayerInsertBelow" Click="_miLayerInsertBelow_Click" HeaderText="Insert below" InputGestureText="Ctrl-D" IconPath="delete.png" />
+								<styles:TkMenuItem x:Name="_miLayerDuplicate" Click="_miLayerDuplicate_Click" HeaderText="Duplicate" InputGestureText="Alt-D" IconPath="copy.png" />
+								<styles:TkMenuItem x:Name="_miLayerCopy" Click="_miLayerCopy_Click" HeaderText="Copy textures" InputGestureText="Alt-C" IconPath="copy.png" />
+								<styles:TkMenuItem x:Name="_miLayerPaste" Click="_miLayerPaste_Click" HeaderText="Paste textures" InputGestureText="Alt-V" IconPath="paste.png" />
+								<Separator />
+								<styles:TkMenuItem x:Name="_miHideToggle" Click="_miHideToggle_Click" HeaderText="Show/Hide layer" InputGestureText="H" IconPath="empty.png" />
+								<styles:TkMenuItem x:Name="_miHideAllButThis" Click="_miHideAllButThis_Click" HeaderText="Hide all but this" IconPath="empty.png" />
+								<Separator />
+								<styles:TkMenuItem x:Name="_miShowAll" Click="_miShowAll_Click" HeaderText="Show all" IconPath="empty.png" />
+							</ContextMenu>
+						</Grid.ContextMenu>
+					</Grid>
+				</ScrollViewer>
+			</Grid>
+            
+			<Grid Name="_gridLayerBackground" Grid.Row="1" Grid.Column="1" VerticalAlignment="Top">
+				<Grid.Background>
+					<VisualBrush x:Name="_visualBrushLayerBackground" TileMode="Tile" Viewport="10,0,50,30" AlignmentY="Bottom" ViewportUnits="Absolute" Stretch="None">
+						<VisualBrush.Visual>
+							<Grid Width="50" Height="30">
+								<Image Source="pack://application:,,,/Resources/keyframe_d.png" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+							</Grid>
+						</VisualBrush.Visual>
+					</VisualBrush>
+				</Grid.Background>
+			</Grid>
+			
+			<!-- Layers renderer part -->
+			<Grid Grid.Row="1" Grid.Column="1">
+                <ScrollViewer Name="_svKeyFrames" ScrollChanged="_svKeyFrames_ScrollChanged" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" FocusVisualStyle="{x:Null}">
+                    <Grid Name="_gridEvents">
+                        <Grid.ContextMenu>
+                            <ContextMenu>
+                                <styles:TkMenuItem x:Name="_miDelete" Click="_miDelete_Click" HeaderText="Delete key" IconPath="delete.png" />
+                                <styles:TkMenuItem x:Name="_miCopy" Click="_miCopy_Click" HeaderText="Copy" IconPath="copy.png" />
+								<styles:TkMenuItem x:Name="_miPaste" Click="_miPaste_Click" HeaderText="Paste" IconPath="paste.png" />
+                                <styles:TkMenuItem HeaderText="Paste..." IconPath="empty.png">
+                                    <styles:TkMenuItem x:Name="_miPasteColor" Click="_miPasteColor_Click" HeaderText="Color" />
+                                    <styles:TkMenuItem x:Name="_miPasteBlend" Click="_miPasteBlend_Click" HeaderText="Blend" />
+                                    <styles:TkMenuItem x:Name="_miPasteOffset" Click="_miPasteOffset_Click" HeaderText="Offset" />
+                                    <styles:TkMenuItem x:Name="_miPasteAngle" Click="_miPasteAngle_Click"  HeaderText="Angle" />
+                                    <styles:TkMenuItem x:Name="_miPasteVertices" Click="_miPasteVertices_Click" HeaderText="Vertices (XY)" />
+                                    <styles:TkMenuItem x:Name="_miPasteTexture" Click="_miPasteTexture_Click"  HeaderText="Texture" />
+                                    <styles:TkMenuItem x:Name="_miPasteAnimation" Click="_miPasteAnimation_Click" HeaderText="Animation and delay" />
+                                    <styles:TkMenuItem x:Name="_miPasteBias" Click="_miPasteBias_Click" HeaderText="Bias" />
+                                    <styles:TkMenuItem x:Name="_miPasteBezier" Click="_miPasteBezier_Click" HeaderText="Bezier" />
+                                </styles:TkMenuItem>
+                                <styles:TkMenuItem x:Name="_miDeleteAll" Click="_miDeleteAll_Click" HeaderText="Delete key (full)" IconPath="delete.png" />
+                                <styles:TkMenuItem x:Name="_miSelectAll" Click="_miSelectAll_Click" HeaderText="Select all" IconPath="arrowdown.png" />
+                                <styles:TkMenuItem x:Name="_miInterpolate" Click="_miInterpolate_Click" HeaderText="Interpolate" IconPath="interpolate.png" />
+                                <styles:TkMenuItem x:Name="_miDeleteInterpolate" Click="_miDeleteInterpolate_Click" HeaderText="Delete Interpolate" IconPath="interpolate.png" />
+                                <styles:TkMenuItem x:Name="_miNewKey" Click="_miNewKey_Click" HeaderText="New Key" IconPath="add.png" />
+								<styles:TkMenuItem x:Name="_miNewEndKey" Click="_miNewEndKey_Click" HeaderText="New End Key" IconPath="reset.png" />
+                            </ContextMenu>
+                        </Grid.ContextMenu>
+                        <Grid Name="_primaryGrid" HorizontalAlignment="Left">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                        </Grid>
+                        <controls:KeySelector HorizontalAlignment="Left" VerticalAlignment="Top" x:Name="_keySelector" Visibility="Hidden" Grid.RowSpan="1000" IsHitTestVisible="False" Width="10" />
+						<controls:KeySelector HorizontalAlignment="Left" VerticalAlignment="Top" x:Name="_keySelectorPreview" Visibility="Hidden" Grid.RowSpan="1000" IsHitTestVisible="False" Width="10" />
+					</Grid>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+        
+        <Grid IsHitTestVisible="false" Margin="0 25 0 0">
+            <ScrollViewer Name="_svMoveLayers" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" FocusVisualStyle="{x:Null}">
+				<Grid Name="_gridMoveLayers" VerticalAlignment="Top">
+                    <Line Name="_lineMoveLayer" X1="0" Margin="0 0 0 0" X2="1" Stretch="Fill" Stroke="Red" StrokeThickness="3" VerticalAlignment="Top" Visibility="Hidden" Grid.ColumnSpan="2" StrokeStartLineCap="Square" StrokeEndLineCap="Square" />
+                </Grid>
+            </ScrollViewer>
+        </Grid>
+
+		<controls:Timeline x:Name="_timelinePart" Margin="72 0 0 0" />
+	</Grid>
+</UserControl>
