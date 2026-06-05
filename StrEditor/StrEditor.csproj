@@ -500,7 +500,6 @@
     <EmbeddedResource Include="Resources\merge.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="AnimatedGif.SystemDrawing.dll" />
     <EmbeddedResource Include="Resources\actor_dummy.png" />
   </ItemGroup>
   <ItemGroup Condition="Exists('$(ExternalDllsPath)')">

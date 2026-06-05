@@ -213,7 +213,7 @@ namespace StrEditor.Core.Viewport.Renderers {
 			_ri?.Unload();
 
 			foreach (var texture in _textures)
-				texture.Unload(_viewport);
+				texture?.Unload(_viewport);
 		}
 
 		public void DrawSelection() {
