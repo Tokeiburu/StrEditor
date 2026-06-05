@@ -142,6 +142,14 @@ namespace StrEditor.Core.KeyframeEditor {
 				textures.AddRange(_str.Layers[lidx].TextureNames);
 				textures.AddRange(paths.Select(Path.GetFileName));
 
+				foreach (var resource in paths) {
+					var texturePath = Path.GetFileName(resource);
+
+					if (ResourceManager.GetData(texturePath) == null) {
+						ResourceManager.AddImageResource(texturePath, File.ReadAllBytes(resource));
+					}
+				}
+
 				_fieldEditing = true;
 				_str.Commands.BeginNoDelay();
 				_str.Commands.ChangeTextures(lidx, textures);
