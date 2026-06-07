@@ -77,7 +77,7 @@ namespace StrEditor.Core.StrConverters {
 				images.Add((bitmap, saveImageName));
 			}
 
-			var vertices = new float[] {
+			var positions = new float[] {
 				-(image.Width / 2),
 				(image.Width / 2) + (image.Width % 2),
 				(image.Width / 2) + (image.Width % 2),
@@ -100,8 +100,8 @@ namespace StrEditor.Core.StrConverters {
 					StrKeyFrame keyFrame1 = StrKeyFrame.CreateDefaultFrame(i * framesPerInterval + framesPerInterval);
 
 					for (int j = 0; j < 8; j++) {
-						keyFrame0.Xy[j] = vertices[j];
-						keyFrame1.Xy[j] = vertices[j];
+						keyFrame0.Positions[j] = positions[j];
+						keyFrame1.Positions[j] = positions[j];
 					}
 
 					// Mark as the end frame
@@ -117,10 +117,10 @@ namespace StrEditor.Core.StrConverters {
 
 				StrKeyFrame keyFrame0 = new StrKeyFrame();
 
-				keyFrame0.AnimationType = 2;
+				keyFrame0.AnimationType = AnimationType.Loop;
 
 				for (int j = 0; j < 8; j++)
-					keyFrame0.Xy[j] = vertices[j];
+					keyFrame0.Positions[j] = positions[j];
 
 				keyFrame0.Color[0] = 255;
 				keyFrame0.Color[1] = 255;
@@ -134,8 +134,8 @@ namespace StrEditor.Core.StrConverters {
 					keyFrame0.Delay = 0;
 				}
 
-				keyFrame0.SourceAlpha = 5;
-				keyFrame0.DestinationAlpha = 7;
+				keyFrame0.BlendSrc = 5;
+				keyFrame0.BlendDst = 7;
 				keyFrame0.IsInterpolated = true;
 
 				StrKeyFrame keyFrame1 = new StrKeyFrame(keyFrame0);

@@ -38,6 +38,7 @@ using StrEditor.Services;
 using StrEditor.Core.StrConverters;
 using static StrEditor.Services.StrSaveService;
 using StrEditor.Core.Viewport;
+using System.Collections.Generic;
 
 namespace StrEditor {
 	/// <summary>
@@ -114,15 +115,19 @@ namespace StrEditor {
 				_frameViewer.Update();
 			};
 
+			_frameViewer.StrRenderer?.Clear();
+
 			_tmbUndo.SetUndo(Controller.Str.Commands);
 			_tmbRedo.SetRedo(Controller.Str.Commands);
 
 			Controller.Str.Commands.CommandUndo += delegate {
 				_timelineEditor.Selection.Set(_timelineEditor.Selection);
+				_keyFrameEditor.InvalidateKeyFrame();
 			};
 
 			Controller.Str.Commands.CommandRedo += delegate {
 				_timelineEditor.Selection.Set(_timelineEditor.Selection);
+				_keyFrameEditor.InvalidateKeyFrame();
 			};
 
 			var layers = Controller.Str.Layers;

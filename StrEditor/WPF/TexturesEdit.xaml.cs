@@ -58,7 +58,7 @@ namespace StrEditor.WPF {
 
 				try {
 					// Yikes, if textures are deleted, we have to adjust them...
-					_str.Commands.ChangeTextures(_layerIdx, textures);
+					_str.Commands.SetTextures(_layerIdx, textures);
 				}
 				catch (Exception err) {
 					ErrorHandler.HandleException(err);

@@ -162,6 +162,7 @@ namespace StrEditor.Core.TimelineEditor.Controls {
 			ApplicationShortcut.Link(StrEditorCommands.LayerEditorInsertDown, _miLayerInsertBelow, this);
 			ApplicationShortcut.Link(StrEditorCommands.KeyFrameEditorNewKey, _miNewKey, this);
 			ApplicationShortcut.Link(StrEditorCommands.KeyFrameEditorEndKey, _miNewEndKey, this);
+			ApplicationShortcut.Link(StrEditorCommands.KeyFrameEditorSetFromPrevious, _miCopyPrevious, this);
 			ApplicationShortcut.Link(StrEditorCommands.KeyFrameEditorSelectAll, _miSelectAll, this);
 			ApplicationShortcut.Link(StrEditorCommands.LayerEditorTextureCopy, _miLayerCopy, this);
 			ApplicationShortcut.Link(StrEditorCommands.LayerEditorTexturePaste, _miLayerPaste, this);
@@ -180,7 +181,7 @@ namespace StrEditor.Core.TimelineEditor.Controls {
 			ApplicationShortcut.Link(StrEditorCommands.LayerEditorPasteBlend, _miPasteBlend, _controller.StrEditorWindow);
 			ApplicationShortcut.Link(StrEditorCommands.LayerEditorPasteOffset, _miPasteOffset, _controller.StrEditorWindow);
 			ApplicationShortcut.Link(StrEditorCommands.LayerEditorPasteAngle, _miPasteAngle, _controller.StrEditorWindow);
-			ApplicationShortcut.Link(StrEditorCommands.LayerEditorPasteVertices, _miPasteVertices, _controller.StrEditorWindow);
+			ApplicationShortcut.Link(StrEditorCommands.LayerEditorPastePositions, _miPastePositions, _controller.StrEditorWindow);
 			ApplicationShortcut.Link(StrEditorCommands.LayerEditorPasteTexture, _miPasteTexture, _controller.StrEditorWindow);
 			ApplicationShortcut.Link(StrEditorCommands.LayerEditorPasteAnimation, _miPasteAnimation, _controller.StrEditorWindow);
 			ApplicationShortcut.Link(StrEditorCommands.LayerEditorPasteBias, _miPasteBias, _controller.StrEditorWindow);
@@ -219,7 +220,11 @@ namespace StrEditor.Core.TimelineEditor.Controls {
 
 						TryRecoverCommandPreviousSelection(command);
 						Selection.Set(Selection);
-						_controller.KeyFrameEditor.InvalidateKeyFrame();
+
+						// Only invallidate the key frame data if layer's frame index is dirty
+						// Otherwise, this will mess with the currently edited text box field
+						if (Selection.SelectedLayer > -1 && Selection.SelectedLayer < _str.Layers.Count && _str[Selection.SelectedLayer].FrameIndexDirty)
+							_controller.KeyFrameEditor.InvalidateKeyFrame();
 						
 						_controller.Str.InvalidateVisualRedraw();
 					}), DispatcherPriority.Render);
@@ -242,13 +247,13 @@ namespace StrEditor.Core.TimelineEditor.Controls {
 					return false;
 			}
 
-			PositionCommand positionCommand = null;
+			SetEditorPositionCommand positionCommand = null;
 
 			if (command is StrGroupCommand groupCommand) {
 				if (_str.Commands.StackStatus == StackStatus.Undo)
-					positionCommand = groupCommand.NullCommands.FirstOrDefault() as PositionCommand;
+					positionCommand = groupCommand.NullCommands.FirstOrDefault() as SetEditorPositionCommand;
 				else
-					positionCommand = groupCommand.NullCommands.LastOrDefault() as PositionCommand;
+					positionCommand = groupCommand.NullCommands.LastOrDefault() as SetEditorPositionCommand;
 			}
 
 			if (positionCommand != null) {
@@ -720,15 +725,16 @@ namespace StrEditor.Core.TimelineEditor.Controls {
 		private void _miDeleteInterpolate_Click(object sender, RoutedEventArgs e) => Commands.SetInterpolate(Selection, false);
 		private void _miNewKey_Click(object sender, RoutedEventArgs e) => Commands.SetNewKey(Selection);
 		private void _miNewEndKey_Click(object sender, RoutedEventArgs e) => Commands.SetEndKey(Selection);
+		private void _miCopyPrevious_Click(object sender, RoutedEventArgs e) => Commands.CopyPreviousKey(Selection);
 
 		private void _miPasteColor_Click(object sender, RoutedEventArgs e) => Commands.PasteData(PasteDataType.Color);
 		private void _miPasteBlend_Click(object sender, RoutedEventArgs e) => Commands.PasteData(PasteDataType.Blend);
 		private void _miPasteOffset_Click(object sender, RoutedEventArgs e) => Commands.PasteData(PasteDataType.Offset);
 		private void _miPasteAngle_Click(object sender, RoutedEventArgs e) => Commands.PasteData(PasteDataType.Angle);
-		private void _miPasteVertices_Click(object sender, RoutedEventArgs e) => Commands.PasteData(PasteDataType.Vertices);
+		private void _miPastePositions_Click(object sender, RoutedEventArgs e) => Commands.PasteData(PasteDataType.Positions);
 		private void _miPasteTexture_Click(object sender, RoutedEventArgs e) => Commands.PasteData(PasteDataType.Texture);
 		private void _miPasteAnimation_Click(object sender, RoutedEventArgs e) => Commands.PasteData(PasteDataType.Animation);
 		private void _miPasteBias_Click(object sender, RoutedEventArgs e) => Commands.PasteData(PasteDataType.Bias);
-		private void _miPasteBezier_Click(object sender, RoutedEventArgs e) => Commands.PasteData(PasteDataType.Bezier);
+		private void _miPasteBezier_Click(object sender, RoutedEventArgs e) => Commands.PasteData(PasteDataType.BezierPositions);
 	}
 }

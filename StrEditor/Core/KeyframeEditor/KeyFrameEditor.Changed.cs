@@ -8,10 +8,12 @@ using StrEditor.Core.Viewport.Renderers;
 using StrEditor.Core.Viewport.Tools;
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using Utilities;
 
 namespace StrEditor.Core.KeyframeEditor {
@@ -21,17 +23,25 @@ namespace StrEditor.Core.KeyframeEditor {
 				return;
 
 			try {
+				int oldCommandIndex = _str.Commands.CommandIndex;
 				_str.Commands.Begin();
 
 				if (interpolateCheck) {
 					InterpolatedKeyFrame.ConvertToFrame(_currentFrame, _str);
 
-					if (_currentFrame.Interpolated)
+					if (_currentFrame.Interpolated) {
+						_str.Commands.End();
 						return;
+					}
 				}
 
 				_fieldEditing = true;
 				action(_currentFrame.LayerIdx, _currentFrame.KeyIndex);
+				_str.Commands.End();
+
+				// Nothing was changed?
+				if (oldCommandIndex == _str.Commands.CommandIndex)
+					return;
 
 				if (quickUpdate)
 					_str.InvalidateVisual();
@@ -39,9 +49,9 @@ namespace StrEditor.Core.KeyframeEditor {
 					_str.InvalidateVisualRedraw();
 			}
 			catch {
+				_str.Commands.CancelEdit();
 			}
 			finally {
-				_str.Commands.End();
 				_fieldEditing = false;
 			}
 		}
@@ -53,7 +63,7 @@ namespace StrEditor.Core.KeyframeEditor {
 				if (type < 0)
 					type = 0;
 
-				_str.Commands.ChangeAnimationType(lidx, kidx, type);
+				_str.Commands.SetAnimationType(lidx, kidx, (AnimationType)type);
 			});
 		}
 
@@ -76,7 +86,7 @@ namespace StrEditor.Core.KeyframeEditor {
 				layer.Color[1] = _qcsKeyFrameColor.InitialColor.G;
 				layer.Color[2] = _qcsKeyFrameColor.InitialColor.B;
 				layer.Color[3] = _qcsKeyFrameColor.InitialColor.A;
-				_str.Commands.ChangeColor(_currentFrame.LayerIdx, _currentFrame.KeyIndex, _qcsKeyFrameColor.Color.ToGrfColor());
+				_str.Commands.SetColor(_currentFrame.LayerIdx, _currentFrame.KeyIndex, _qcsKeyFrameColor.Color.ToGrfColor());
 				_tbColorR.Text = _qcsKeyFrameColor.Color.R.ToString("0.##");
 				_tbColorG.Text = _qcsKeyFrameColor.Color.G.ToString("0.##");
 				_tbColorB.Text = _qcsKeyFrameColor.Color.B.ToString("0.##");
@@ -90,26 +100,26 @@ namespace StrEditor.Core.KeyframeEditor {
 				float r = FormatConverters.SingleConverter(_tbColorR.Text);
 				float g = FormatConverters.SingleConverter(_tbColorG.Text);
 				float b = FormatConverters.SingleConverter(_tbColorB.Text);
-				_str.Commands.ChangeColor(_currentFrame.LayerIdx, _currentFrame.KeyIndex, a, r, g, b);
+				_str.Commands.SetColor(_currentFrame.LayerIdx, _currentFrame.KeyIndex, a, r, g, b);
 				_qcsKeyFrameColor.Color = Color.FromArgb((byte)a, (byte)r, (byte)g, (byte)b);
 			});
 		}
 
 		private void _cbSrc_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-			ApplyCommand((lidx, kidx) => _str.Commands.SetSrcBlend(_currentFrame.LayerIdx, _currentFrame.KeyIndex, _cbSrc.SelectedIndex + 1));
+			ApplyCommand((lidx, kidx) => _str.Commands.SetBlendSrc(_currentFrame.LayerIdx, _currentFrame.KeyIndex, _cbSrc.SelectedIndex + 1));
 		}
 
 		private void _cbDst_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-			ApplyCommand((lidx, kidx) => _str.Commands.SetDstBlend(_currentFrame.LayerIdx, _currentFrame.KeyIndex, _cbSrc.SelectedIndex + 1));
+			ApplyCommand((lidx, kidx) => _str.Commands.SetBlendDst(_currentFrame.LayerIdx, _currentFrame.KeyIndex, _cbDst.SelectedIndex + 1));
 		}
 
 		private void _boxPos_TextChanged(object sender, TextChangedEventArgs e) {
 			ApplyCommand((lidx, kidx) => {
 				for (int i = 0; i < 8; i++) {
-					if (sender == _tbVertices[i]) {
+					if (sender == _tbPositions[i]) {
 						_fieldEditing = true;
 
-						_str.Commands.SetVertex(lidx, kidx, i, (i >= 4 ? -1 : 1) * FormatConverters.SingleConverter(_tbVertices[i].Text));
+						_str.Commands.SetPosition(lidx, kidx, i, (i >= 4 ? -1 : 1) * FormatConverters.SingleConverter(_tbPositions[i].Text));
 						break;
 					}
 				}
@@ -118,28 +128,28 @@ namespace StrEditor.Core.KeyframeEditor {
 
 		private void _boxUVs_TextChanged(object sender, TextChangedEventArgs e) {
 			ApplyCommand((lidx, kidx) => {
-				float[] vertices = new float[8];
+				float[] positions = new float[8];
 
 				for (int i = 0; i < 4; i++)
-					vertices[i] = FormatConverters.SingleConverter(_tbTextCoords[i].Text);
+					positions[i] = FormatConverters.SingleConverter(_tbUVs[i].Text);
 
-				vertices[4] = 0;
-				vertices[5] = 0;
-				vertices[6] = 1;
-				vertices[7] = 1;
+				positions[4] = 0;
+				positions[5] = 0;
+				positions[6] = 1;
+				positions[7] = 1;
 
-				_str.Commands.SetTextCoords(lidx, kidx, vertices);
+				_str.Commands.SetUVs(lidx, kidx, positions);
 			});
 		}
 
 		private void _boxBezier_TextChanged(object sender, TextChangedEventArgs e) {
 			ApplyCommand((lidx, kidx) => {
-				float[] vertices = new float[4];
+				float[] positions = new float[4];
 
 				for (int i = 0; i < 4; i++)
-					vertices[i] = FormatConverters.SingleConverter(_tbBezier[i].Text);
+					positions[i] = FormatConverters.SingleConverter(_tbBezierPositions[i].Text);
 
-				_str.Commands.SetBezier(lidx, kidx, vertices);
+				_str.Commands.SetBezierPositions(lidx, kidx, positions);
 			});
 		}
 
@@ -150,44 +160,72 @@ namespace StrEditor.Core.KeyframeEditor {
 				if (v < 0)
 					return;
 
-				_str.Commands.ChangeDelay(lidx, kidx, 1f / v);
+				float r = v == 0 ? 0 : 1f / v;
+				_str.Commands.SetDelay(lidx, kidx, r);
 			});
 		}
 
-		private void _sliderScale_ValueChanged(object sender, ValueEventArgs args) {
-			ApplyCommand((lidx, kidx) => {
-				int result = (int)(_sliderRange * args.Value);
+		private void _sliderScale_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
+			if (_isLoading) return;
 
-				((SliderColor)sender).SetPosition((double)result / _sliderRange, true);
-				_tbScaleBias.Text = (result - _sliderMid).ToString(CultureInfo.InvariantCulture);
-				_str.Commands.SetScaleBias(lidx, kidx, result - _sliderMid);
+			if (_beginBiasEdit) {
+				InterpolatedKeyFrame.ConvertToFrame(_currentFrame, _str);
+				_str.Commands.End();
+				_layerRenderer.Inter.ScaleBias = (float)e.NewValue;
+				OnValueChanged(KeyFrameValueType.ScaleBias);
+				_controller.FrameViewer.QuickUpdate();
+				return;
+			}
+
+			ApplyCommand((lidx, kidx) => {
+				int result = (int)e.NewValue;
+				_tbScaleBias.Text = result.ToString(CultureInfo.InvariantCulture);
+				_str.Commands.SetScaleBias(lidx, kidx, result);
 			});
 		}
 
-		private void _sliderOffset_ValueChanged(object sender, ValueEventArgs args) {
-			ApplyCommand((lidx, kidx) => {
-				int result = (int)(_sliderRange * args.Value);
+		private void _sliderOffset_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
+			if (_isLoading) return;
 
-				((SliderColor)sender).SetPosition((double)result / _sliderRange, true);
-				_tbOffsetBias.Text = (result - _sliderMid).ToString(CultureInfo.InvariantCulture);
-				_str.Commands.SetOffsetBias(lidx, kidx, result - _sliderMid);
+			if (_beginBiasEdit) {
+				InterpolatedKeyFrame.ConvertToFrame(_currentFrame, _str);
+				_str.Commands.End();
+				_layerRenderer.Inter.OffsetBias = (float)e.NewValue;
+				OnValueChanged(KeyFrameValueType.OffsetBias);
+				_controller.FrameViewer.QuickUpdate();
+				return;
+			}
+
+			ApplyCommand((lidx, kidx) => {
+				int result = (int)e.NewValue;
+				_tbOffsetBias.Text = result.ToString(CultureInfo.InvariantCulture);
+				_str.Commands.SetOffsetBias(lidx, kidx, result);
 			});
 		}
 
-		private void _sliderAngle_ValueChanged(object sender, ValueEventArgs args) {
-			ApplyCommand((lidx, kidx) => {
-				int result = (int)(_sliderRange * args.Value);
+		private void _sliderAngle_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
+			if (_isLoading) return;
 
-				((SliderColor)sender).SetPosition((double)result / _sliderRange, true);
-				_tbAngleBias.Text = (result - _sliderMid).ToString(CultureInfo.InvariantCulture);
-				_str.Commands.SetAngleBias(lidx, kidx, result - _sliderMid);
+			if (_beginBiasEdit) {
+				InterpolatedKeyFrame.ConvertToFrame(_currentFrame, _str);
+				_str.Commands.End();
+				_layerRenderer.Inter.AngleBias = (float)e.NewValue;
+				OnValueChanged(KeyFrameValueType.AngleBias);
+				_controller.FrameViewer.QuickUpdate();
+				return;
+			}
+
+			ApplyCommand((lidx, kidx) => {
+				int result = (int)e.NewValue;
+				_tbAngleBias.Text = result.ToString(CultureInfo.InvariantCulture);
+				_str.Commands.SetAngleBias(lidx, kidx, result);
 			});
 		}
 
 		private void _tbScaleBias_TextChanged(object sender, TextChangedEventArgs e) {
 			ApplyCommand((lidx, kidx) => {
 				float v = FormatConverters.SingleConverter(((TextBox)sender).Text);
-				_sliderScale.SetPosition((double)(v + _sliderMid) / _sliderRange, true);
+				_sliderScale.Value = v;
 				_str.Commands.SetScaleBias(lidx, kidx, v);
 			});
 		}
@@ -195,7 +233,7 @@ namespace StrEditor.Core.KeyframeEditor {
 		private void _tbOffsetBias_TextChanged(object sender, TextChangedEventArgs e) {
 			ApplyCommand((lidx, kidx) => {
 				float v = FormatConverters.SingleConverter(((TextBox)sender).Text);
-				_sliderOffset.SetPosition((double)(v + _sliderMid) / _sliderRange, true);
+				_sliderOffset.Value = v;
 				_str.Commands.SetOffsetBias(lidx, kidx, v);
 			});
 		}
@@ -203,7 +241,7 @@ namespace StrEditor.Core.KeyframeEditor {
 		private void _tbAngleBias_TextChanged(object sender, TextChangedEventArgs e) {
 			ApplyCommand((lidx, kidx) => {
 				float v = FormatConverters.SingleConverter(((TextBox)sender).Text);
-				_sliderAngle.SetPosition((double)(v + _sliderMid) / _sliderRange, true);
+				_sliderAngle.Value = v;
 				_str.Commands.SetAngleBias(lidx, kidx, v);
 			});
 		}
@@ -228,42 +266,35 @@ namespace StrEditor.Core.KeyframeEditor {
 				float newScaleY = FormatConverters.SingleConverter(_tbScaleY.Text);
 				var scale = _getFrameScale(renderer, false);
 
-				float[] vertices = new float[8];
+				float[] positions = new float[8];
 
 				for (int i = 0; i < 8; i++)
-					vertices[i] = _currentFrame.Vertices[i];
+					positions[i] = _currentFrame.Positions[i];
 
 				if (scale.X == 0) {
-					vertices[0] = -scale.TextureWidth / 2;
-					vertices[1] = -vertices[0];
-					vertices[2] = -vertices[0];
-					vertices[3] = vertices[0];
+					positions[0] = -scale.TextureWidth / 2;
+					positions[1] = -positions[0];
+					positions[2] = -positions[0];
+					positions[3] = positions[0];
 				}
 				else {
 					for (int i = 0; i < 4; i++)
-						vertices[i] = vertices[i] / scale.X * newScaleX;
+						positions[i] = positions[i] / scale.X * newScaleX;
 				}
 
 				if (scale.Y == 0) {
-					vertices[4] = -scale.TextureHeight / 2;
-					vertices[5] = vertices[4];
-					vertices[6] = -vertices[4];
-					vertices[7] = -vertices[4];
+					positions[4] = -scale.TextureHeight / 2;
+					positions[5] = positions[4];
+					positions[6] = -positions[4];
+					positions[7] = -positions[4];
 				}
 				else {
 					for (int i = 4; i < 8; i++)
-						vertices[i] = vertices[i] / scale.Y * newScaleY;
+						positions[i] = positions[i] / scale.Y * newScaleY;
 				}
 
-				_controller.Str.Commands.SetVertices(lidx, kidx, vertices);
-
-				try {
-					DisableEvents();
-					SetVertices(vertices);
-				}
-				finally {
-					EnableEvents();
-				}
+				_controller.Str.Commands.SetPositions(lidx, kidx, positions);
+				OnValueChanged(KeyFrameValueType.Points);
 			});
 		}
 
@@ -275,14 +306,14 @@ namespace StrEditor.Core.KeyframeEditor {
 			_scaleChanged();
 		}
 
-		private float[] _originalVertices = new float[8];
+		private float[] _originalPositions = new float[8];
 
 		private (float X, float Y, float TextureWidth, float TextureHeight) _getFrameScale(LayerRenderer renderer, bool useRenderer) {
 			var textures = renderer.Textures;
-			float[] vertices = _originalVertices;
+			float[] positions = _originalPositions;
 
-			float frameWidth = vertices[1] - vertices[0];
-			float frameHeight = vertices[6] - vertices[4];
+			float frameWidth = positions[1] - positions[0];
+			float frameHeight = positions[6] - positions[4];
 			float textureWidth = 64f;
 			float textureHeight = 64f;
 
@@ -369,11 +400,9 @@ namespace StrEditor.Core.KeyframeEditor {
 
 				if (tool == im.PointTranslateTool) {
 					im.PointTranslateTool.DoEventRaw(_controller.FrameViewer, _clickedPoint.X, _clickedPoint.Y, false);
-					SetVertices(_currentEditLayer.Inter.Vertices);
 				}
 				else {
 					im.LayerTransformTool.DoTranslateRaw(_controller.FrameViewer, _clickedPoint.X, _clickedPoint.Y, false);
-					SetOffsets(_currentEditLayer.Inter.Offset);
 				}
 
 				_controller.FrameViewer.QuickUpdate();
@@ -385,50 +414,60 @@ namespace StrEditor.Core.KeyframeEditor {
 			e.Handled = true;
 		}
 
-		public void TranslateOffset(float x, float y) {
-			TkVector2 p = new TkVector2(x, y);
+		public void OnValueChanged(params KeyFrameValueType[] args) {
+			if (args.Contains(KeyFrameValueType.Points)) {
+				_upKeyRefreshField.Execute(() => Dispatcher.BeginInvoke(new Action(delegate {
+					foreach (var arg in args)
+						_updateProperty(arg);
 
-			ApplyCommand((lidx, kidx) => {
-				if (Keyboard.Modifiers.HasFlag(ModifierKeys.Control)) {
-					p.RotateZ(_currentFrame.Angle);
+				}), DispatcherPriority.Render));
+			}
+			else {
+				foreach (var arg in args)
+					_updateProperty(arg);
+			}
+		}
 
-					float[] vertices = new float[8];
+		private void _updateProperty(KeyFrameValueType arg) {
+			try {
+				// Get the most active frame, usually the renderer has the most updated value
+				var inter = _layerRenderer?.Inter ?? _currentFrame;
 
-					for (int i = 0; i < 8; i++)
-						vertices[i] = _currentFrame.Vertices[i];
+				_isLoading = true;
 
-					for (int i = 0; i < 4; i++)
-						vertices[i] += p.X;
-
-					for (int i = 4; i < 8; i++)
-						vertices[i] += p.Y;
-
-					_controller.Str.Commands.SetVertices(lidx, kidx, vertices);
-
-					try {
-						DisableEvents();
-						_currentFrame.Vertices = vertices;
-						SetVertices(vertices);
-					}
-					finally {
-						EnableEvents();
-					}
+				switch (arg) {
+					case KeyFrameValueType.Points:
+						SetPositions(inter.Positions);
+						break;
+					case KeyFrameValueType.Angle:
+						SetAngle(inter.Angle);
+						break;
+					case KeyFrameValueType.OffsetXY:
+						SetOffsets(inter.Offset);
+						break;
+					case KeyFrameValueType.P1:
+					case KeyFrameValueType.P2:
+					case KeyFrameValueType.P3:
+					case KeyFrameValueType.P4:
+						SetPositions(inter.Positions);
+						break;
+					case KeyFrameValueType.UVs:
+						SetUVs(inter.UVs);
+						break;
+					case KeyFrameValueType.ScaleBias:
+						SetScaleBias(inter.ScaleBias);
+						break;
+					case KeyFrameValueType.AngleBias:
+						SetAngleBias(inter.AngleBias);
+						break;
+					case KeyFrameValueType.OffsetBias:
+						SetOffsetBias(inter.OffsetBias);
+						break;
 				}
-				else {
-					var offset = _currentFrame.Offset;
-					offset += p;
-					_controller.Str.Commands.SetOffset(lidx, kidx, offset.X, offset.Y);
-
-					try {
-						DisableEvents();
-						_currentFrame.Offset = offset;
-						SetOffsets(offset);
-					}
-					finally {
-						EnableEvents();
-					}
-				}
-			});
+			}
+			finally {
+				_isLoading = false;
+			}
 		}
 	}
 }

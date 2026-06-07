@@ -36,6 +36,7 @@ namespace StrEditor.ApplicationConfiguration {
 		public static TkCommand LayerEditorInsertDown = ApplicationShortcut.FromString("Ctrl-D", "LayerEditor.InsertDown");
 		public static TkCommand KeyFrameEditorNewKey = ApplicationShortcut.FromString("N", "KeyFrameEditor.NewKey");
 		public static TkCommand KeyFrameEditorEndKey = ApplicationShortcut.FromString("E", "KeyFrameEditor.EndKey");
+		public static TkCommand KeyFrameEditorSetFromPrevious = ApplicationShortcut.FromString("F", "KeyFrameEditor.SetFromPrevious");
 		public static TkCommand KeyFrameEditorSelectAll = ApplicationShortcut.FromString("Ctrl-A", "KeyFrameEditor.SelectAll");
 		public static TkCommand LayerEditorTextureCopy = ApplicationShortcut.FromString("Alt-C", "LayerEditor.TextureCopy");
 		public static TkCommand LayerEditorTexturePaste = ApplicationShortcut.FromString("Alt-V", "LayerEditor.TexturePaste");
@@ -51,7 +52,7 @@ namespace StrEditor.ApplicationConfiguration {
 		public static TkCommand LayerEditorPasteBlend = ApplicationShortcut.FromString("Ctrl-Shift-2", "LayerEditor.PasteBlend");
 		public static TkCommand LayerEditorPasteOffset = ApplicationShortcut.FromString("Ctrl-Shift-3", "LayerEditor.PasteOffset");
 		public static TkCommand LayerEditorPasteAngle = ApplicationShortcut.FromString("Ctrl-Shift-4", "LayerEditor.PasteAngle");
-		public static TkCommand LayerEditorPasteVertices = ApplicationShortcut.FromString("Ctrl-Shift-5", "LayerEditor.PasteVertices");
+		public static TkCommand LayerEditorPastePositions = ApplicationShortcut.FromString("Ctrl-Shift-5", "LayerEditor.PastePositions");
 		public static TkCommand LayerEditorPasteTexture = ApplicationShortcut.FromString("Ctrl-Shift-6", "LayerEditor.PasteTexture");
 		public static TkCommand LayerEditorPasteAnimation = ApplicationShortcut.FromString("Ctrl-Shift-7", "LayerEditor.PasteAnimation");
 		public static TkCommand LayerEditorPasteBias = ApplicationShortcut.FromString("Ctrl-Shift-8", "LayerEditor.PasteBias");

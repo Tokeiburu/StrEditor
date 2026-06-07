@@ -1,6 +1,7 @@
 ﻿using GRF.FileFormats.StrFormat;
 using GRF.Graphics;
 using StrEditor.ApplicationConfiguration;
+using StrEditor.Core.KeyframeEditor;
 using StrEditor.Core.Viewport.Renderers;
 using System.Windows;
 
@@ -25,6 +26,7 @@ namespace StrEditor.Core.Viewport.Tools {
 		protected LayerRenderer _renderer;
 		protected Str _str;
 		protected FrameViewer _viewport;
+		protected KeyFrameEditor _kfe;
 		protected InterpolatedKeyFrame _keyFrameCopy;
 		protected StrLayer _layerCopy;
 
@@ -32,6 +34,7 @@ namespace StrEditor.Core.Viewport.Tools {
 			_renderer = renderer;
 			_str = viewport.Controller.Str;
 			_viewport = viewport;
+			_kfe = viewport.Controller.KeyFrameEditor;
 
 			SaveInitialData(viewport);
 		}
@@ -45,15 +48,15 @@ namespace StrEditor.Core.Viewport.Tools {
 			_keyFrameCopy.Scale = new TkVector2(1, 1);
 
 			for (int i = 0; i < 8; i++) {
-				_keyFrameCopy.Vertices[i] = _renderer.Inter.Vertices[i];
+				_keyFrameCopy.Positions[i] = _renderer.Inter.Positions[i];
 			}
 
 			for (int i = 0; i < 4; i++) {
-				_keyFrameCopy.Bezier[i] = _renderer.Inter.Bezier[i];
+				_keyFrameCopy.BezierPositions[i] = _renderer.Inter.BezierPositions[i];
 			}
 
 			for (int i = 0; i < 8; i++) {
-				_keyFrameCopy.TextCoords[i] = _renderer.Inter.TextCoords[i];
+				_keyFrameCopy.UVs[i] = _renderer.Inter.UVs[i];
 			}
 
 			if (StrEditorConfiguration.GroupEdit) {

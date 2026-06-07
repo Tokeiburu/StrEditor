@@ -43,7 +43,7 @@
             </Grid>
 
             <Label Content="Select P1" Grid.Row="3" Margin="3" Padding="0" VerticalAlignment="Center" />
-            <DockPanel Name="_dockPanelBezier" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Grid.ColumnSpan="2">
+            <DockPanel Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Grid.ColumnSpan="2">
 				<TextBox Margin="3 3 0 3" Width="50" Text="{Binding BoundsP1X, UpdateSourceTrigger=PropertyChanged}" />
 				<TextBox Margin="-1 3 0 3" Width="50" Text="{Binding BoundsP1Y, UpdateSourceTrigger=PropertyChanged}" />
                 <TextBlock Text="Select P2" Margin="3" Padding="0" VerticalAlignment="Center" Width="50" TextAlignment="Right" />

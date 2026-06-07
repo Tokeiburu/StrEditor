@@ -78,7 +78,7 @@
                                     <styles:TkMenuItem x:Name="_miPasteBlend" Click="_miPasteBlend_Click" HeaderText="Blend" />
                                     <styles:TkMenuItem x:Name="_miPasteOffset" Click="_miPasteOffset_Click" HeaderText="Offset" />
                                     <styles:TkMenuItem x:Name="_miPasteAngle" Click="_miPasteAngle_Click"  HeaderText="Angle" />
-                                    <styles:TkMenuItem x:Name="_miPasteVertices" Click="_miPasteVertices_Click" HeaderText="Vertices (XY)" />
+                                    <styles:TkMenuItem x:Name="_miPastePositions" Click="_miPastePositions_Click" HeaderText="Positions (XY)" />
                                     <styles:TkMenuItem x:Name="_miPasteTexture" Click="_miPasteTexture_Click"  HeaderText="Texture" />
                                     <styles:TkMenuItem x:Name="_miPasteAnimation" Click="_miPasteAnimation_Click" HeaderText="Animation and delay" />
                                     <styles:TkMenuItem x:Name="_miPasteBias" Click="_miPasteBias_Click" HeaderText="Bias" />
@@ -88,6 +88,7 @@
                                 <styles:TkMenuItem x:Name="_miSelectAll" Click="_miSelectAll_Click" HeaderText="Select all" IconPath="arrowdown.png" />
                                 <styles:TkMenuItem x:Name="_miInterpolate" Click="_miInterpolate_Click" HeaderText="Interpolate" IconPath="interpolate.png" />
                                 <styles:TkMenuItem x:Name="_miDeleteInterpolate" Click="_miDeleteInterpolate_Click" HeaderText="Delete Interpolate" IconPath="interpolate.png" />
+                                <styles:TkMenuItem x:Name="_miCopyPrevious" Click="_miCopyPrevious_Click" HeaderText="Set from previous key" IconPath="copy.png" />
                                 <styles:TkMenuItem x:Name="_miNewKey" Click="_miNewKey_Click" HeaderText="New Key" IconPath="add.png" />
 								<styles:TkMenuItem x:Name="_miNewEndKey" Click="_miNewEndKey_Click" HeaderText="New End Key" IconPath="reset.png" />
                             </ContextMenu>

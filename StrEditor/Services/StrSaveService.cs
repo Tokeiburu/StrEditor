@@ -1,4 +1,5 @@
 ﻿using GRF.Core;
+using GRF.FileFormats.RsmFormat;
 using GRF.FileFormats.StrFormat;
 using GRF.GrfSystem;
 using GRF.IO;
@@ -203,7 +204,7 @@ namespace StrEditor.Services {
 						if (!ezv && (
 							// ReSharper disable CompareOfFloatsByEqualityOperator
 							layer[keyIndex].AngleBias != 0 || layer[keyIndex].OffsetBias != 0 || layer[keyIndex].ScaleBias != 0 ||
-							layer[keyIndex].Bezier[2] != 0 || layer[keyIndex].Bezier[3] != 0 || keyFrame.Bezier[0] != 0 || keyFrame.Bezier[1] != 0)) {
+							layer[keyIndex].BezierPositions[2] != 0 || layer[keyIndex].BezierPositions[3] != 0 || keyFrame.BezierPositions[0] != 0 || keyFrame.BezierPositions[1] != 0)) {
 							// ReSharper restore CompareOfFloatsByEqualityOperator
 							// Create all frames!
 							layer[keyIndex].IsInterpolated = false;
@@ -246,6 +247,10 @@ namespace StrEditor.Services {
 		}
 
 		private SaveResult _saveToFileSystem(Str str) {
+			foreach (var keyframe in str.Layers[1].KeyFrames) {
+				keyframe.MtPresent = 0;
+			}
+
 			if (str.LoadedPath.IsExtension(".ezv")) {
 				EzvToStrConverter.SaveAsEzv(_fixInterpolate(str, true), str.LoadedPath);
 			}

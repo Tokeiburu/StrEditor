@@ -423,4 +423,37 @@
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
     </Style>
+
+
+	<Style x:Key="GrfSliderStyle" TargetType="Slider">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="Slider">
+					<Grid x:Name="Background" Background="Transparent">
+						<Border x:Name="TrackBackground" Height="4" Background="#D0D0D0" CornerRadius="1" VerticalAlignment="Center" Margin="4,0"/>
+
+						<Track x:Name="PART_Track">
+							<Track.DecreaseRepeatButton>
+								<RepeatButton Command="{x:Static Slider.DecreaseLarge}" Visibility="Hidden" />
+							</Track.DecreaseRepeatButton>
+
+							<Track.IncreaseRepeatButton>
+								<RepeatButton Command="{x:Static Slider.IncreaseLarge}" Visibility="Hidden" />
+							</Track.IncreaseRepeatButton>
+
+							<Track.Thumb>
+								<Thumb Width="8">
+									<Thumb.Template>
+										<ControlTemplate TargetType="{x:Type Thumb}">
+											<Border Background="#0076D6" CornerRadius="2" />
+										</ControlTemplate>
+									</Thumb.Template>
+								</Thumb>
+							</Track.Thumb>
+						</Track>
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
 </ResourceDictionary>

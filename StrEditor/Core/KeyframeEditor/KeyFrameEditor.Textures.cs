@@ -16,6 +16,7 @@ using Utilities.Extension;
 
 namespace StrEditor.Core.KeyframeEditor {
 	public class TextureView {
+		private static Tuple<string, BitmapSource> _lastCachedImage;
 		public string ResourcePath;
 		private BitmapSource _cachedImage;
 
@@ -23,10 +24,15 @@ namespace StrEditor.Core.KeyframeEditor {
 		public BitmapSource Image {
 			get {
 				if (_cachedImage == null) {
+					if (_lastCachedImage != null && _lastCachedImage.Item1 == ResourcePath) {
+						return _lastCachedImage.Item2;
+					}
+
 					var data = ResourceManager.GetData(ResourcePath);
 
 					if (data != null) {
 						_cachedImage = new GrfImage(data).Cast<BitmapSource>();
+						_lastCachedImage = new Tuple<string, BitmapSource>(ResourcePath, _cachedImage);
 					}
 				}
 
@@ -123,7 +129,7 @@ namespace StrEditor.Core.KeyframeEditor {
 					if (_selectedTexture.SelectedIndex > 0)
 						textureIndex = _selectedTexture.SelectedIndex;
 
-					_str.Commands.ChangeTextureIndex(lidx, kidx, textureIndex);
+					_str.Commands.SetTextureIndex(lidx, kidx, textureIndex);
 				}, false);
 			}
 		}
@@ -152,19 +158,19 @@ namespace StrEditor.Core.KeyframeEditor {
 
 				_fieldEditing = true;
 				_str.Commands.BeginNoDelay();
-				_str.Commands.ChangeTextures(lidx, textures);
-				_str.Commands.ChangeTextureIndex(lidx, kidx, textureIndex);
+				_str.Commands.SetTextures(lidx, textures);
+				_str.Commands.SetTextureIndex(lidx, kidx, textureIndex);
 				UpdateTextures(_str.Layers[lidx], true);
 
 				if (hasNoTextures) {
-					_setVerticesToImageSize(lidx, kidx, new GrfImage(paths[0]));
+					_setPositionsToImageSize(lidx, kidx, new GrfImage(paths[0]));
 				}
 			}, false);
 		}
 
-		private void _setVerticesToImageSize(int lidx, int kidx, GrfImage image) {
+		private void _setPositionsToImageSize(int lidx, int kidx, GrfImage image) {
 			try {
-				float[] vertices = {
+				float[] positions = {
 					-(image.Width / 2),
 					(image.Width / 2) + (image.Width % 2),
 					(image.Width / 2) + (image.Width % 2),
@@ -175,7 +181,7 @@ namespace StrEditor.Core.KeyframeEditor {
 					(image.Height / 2) + (image.Height % 2),
 				};
 
-				_str.Commands.SetVertices(lidx, kidx, vertices);
+				_str.Commands.SetPositions(lidx, kidx, positions);
 			}
 			catch {
 			}

@@ -125,7 +125,7 @@ namespace StrEditor.ApplicationConfiguration {
 
 		#region Program's internal configuration and information
 
-		public static string PublicVersion => "1.1.2";
+		public static string PublicVersion => "1.1.3";
 		public static string Author => "Tokeiburu";
 		public static string ProgramName => "Str Editor";
 		public static string RealVersion => Assembly.GetEntryAssembly().GetName().Version.ToString();

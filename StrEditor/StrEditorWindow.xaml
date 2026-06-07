@@ -6,7 +6,7 @@
         xmlns:editorControls="clr-namespace:StrEditor.Core.Viewport"
         xmlns:wpf1="clr-namespace:StrEditor.Core"
         xmlns:wpfBugFix="clr-namespace:TokeiLibrary.WpfBugFix;assembly=TokeiLibrary"
-        xmlns:styles="clr-namespace:TokeiLibrary.WPF.Styles;assembly=TokeiLibrary"
+        xmlns:Styles="clr-namespace:TokeiLibrary.WPF.Styles;assembly=TokeiLibrary"
         xmlns:TokeiLibrary="clr-namespace:TokeiLibrary;assembly=TokeiLibrary" xmlns:keyframeeditor="clr-namespace:StrEditor.Core.KeyframeEditor" xmlns:controls="clr-namespace:StrEditor.Core.TimelineEditor.Controls" xmlns:gifexporter="clr-namespace:StrEditor.Core.GifExporter"
 		Title="StrEditor" Height="800" Width="1010" PreviewDragEnter="_wfh_PreviewDragEnter" PreviewDrop="_wfh_PreviewDrop" AllowDrop="True">
     <Grid>
@@ -19,59 +19,59 @@
                 <MenuItem.Header>
                     <Label Content="File" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="-5 0 -5 0" />
                 </MenuItem.Header>
-				<MenuItem Name="_miNew" Click="_miNew_Click" Header="New (empty)" TokeiLibrary:WpfProperties.ImagePath="add.png" />
-                <MenuItem Name="_miOpen" Click="_miOpen_Click" Header="Open..." TokeiLibrary:WpfProperties.ImagePath="newFile.png" />
-                <MenuItem Name="_miOpenRecent" Header="Open recent" />
+				<Styles:TkMenuItem Name="_miNew" Click="_miNew_Click" Header="New (empty)" TokeiLibrary:WpfProperties.ImagePath="add.png" />
+                <Styles:TkMenuItem Name="_miOpen" Click="_miOpen_Click" Header="Open..." TokeiLibrary:WpfProperties.ImagePath="newFile.png" />
+                <Styles:TkMenuItem Name="_miOpenRecent" Header="Open recent" />
                 <Separator />
-                <MenuItem Name="_miSaveGif" Click="_miSaveGif_Click" Header="Save as Gif" />
-                <MenuItem Name="_miSave" Click="_miSave_Click" Header="Save" TokeiLibrary:WpfProperties.ImagePath="save.png" />
-                <MenuItem Name="_miSaveAs" Click="_miSaveAs_Click" Header="Save as..." />
+                <Styles:TkMenuItem Name="_miSaveGif" Click="_miSaveGif_Click" Header="Save as Gif" />
+                <Styles:TkMenuItem Name="_miSave" Click="_miSave_Click" Header="Save" TokeiLibrary:WpfProperties.ImagePath="save.png" />
+                <Styles:TkMenuItem Name="_miSaveAs" Click="_miSaveAs_Click" Header="Save as..." />
 				<Separator />
-				<MenuItem Name="_miExportPng" Click="_miExportPng_Click" Header="Export as PNG..." />
+				<Styles:TkMenuItem Name="_miExportPng" Click="_miExportPng_Click" Header="Export as PNG..." />
                 <Separator />
-                <MenuItem Name="_miSelectStr" Click="_miSelectStr_Click" Header="Select Str" TokeiLibrary:WpfProperties.ImagePath="arrowdown.png"  />
+                <Styles:TkMenuItem Name="_miSelectStr" Click="_miSelectStr_Click" Header="Select Str" TokeiLibrary:WpfProperties.ImagePath="arrowdown.png"  />
                 <Separator />
-                <MenuItem Name="_miSettings" Click="_miSettings_Click" Header="Settings" TokeiLibrary:WpfProperties.ImagePath="settings.png" />
+                <Styles:TkMenuItem Name="_miSettings" Click="_miSettings_Click" Header="Settings" TokeiLibrary:WpfProperties.ImagePath="settings.png" />
                 <Separator />
-                <MenuItem Name="_miAbout" Click="_miAbout_Click" Header="About..." TokeiLibrary:WpfProperties.ImagePath="help.png" />
-                <MenuItem Name="_miClose" Click="_miClose_Click" Header="Quit" />
+                <Styles:TkMenuItem Name="_miAbout" Click="_miAbout_Click" Header="About..." TokeiLibrary:WpfProperties.ImagePath="help.png" />
+                <Styles:TkMenuItem Name="_miClose" Click="_miClose_Click" Header="Quit" />
             </MenuItem>
 			<MenuItem>
                 <MenuItem.Header>
                     <Label Content="Edit" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="-5 0 -5 0" />
                 </MenuItem.Header>
-                <MenuItem Name="_miCopy" Header="Copy" TokeiLibrary:WpfProperties.ImagePath="copy.png" />
-                <MenuItem Name="_miPaste" Header="Paste" TokeiLibrary:WpfProperties.ImagePath="paste.png" />
-                <MenuItem Name="_miCut" Header="Cut" TokeiLibrary:WpfProperties.ImagePath="cut.png" />
-                <MenuItem Name="_miAddBezier" Header="Add bezier curve" TokeiLibrary:WpfProperties.ImagePath="interpolate.png" />
-                <MenuItem Name="_miDelBezier" Header="Delete bezier curve" TokeiLibrary:WpfProperties.ImagePath="empty.png" />
-                <MenuItem Name="_miCenterOrigin" Header="Center origin" TokeiLibrary:WpfProperties.ImagePath="center.png" />
+                <Styles:TkMenuItem Name="_miCopy" Header="Copy" TokeiLibrary:WpfProperties.ImagePath="copy.png" />
+                <Styles:TkMenuItem Name="_miPaste" Header="Paste" TokeiLibrary:WpfProperties.ImagePath="paste.png" />
+                <Styles:TkMenuItem Name="_miCut" Header="Cut" TokeiLibrary:WpfProperties.ImagePath="cut.png" />
+                <Styles:TkMenuItem Name="_miAddBezier" Header="Add bezier curve" TokeiLibrary:WpfProperties.ImagePath="interpolate.png" />
+                <Styles:TkMenuItem Name="_miDelBezier" Header="Delete bezier curve" TokeiLibrary:WpfProperties.ImagePath="empty.png" />
+                <Styles:TkMenuItem Name="_miCenterOrigin" Header="Center origin" TokeiLibrary:WpfProperties.ImagePath="center.png" />
 				<MenuItem Header="Scale (from center)" TokeiLibrary:WpfProperties.ImagePath="expand.png">
-				    <MenuItem Name="_miScaleCenterKeyFrame" Header="Scale frame" />
-				    <MenuItem Name="_miScaleCenterLayer" Header="Scale layer" />
-				    <MenuItem Name="_miScaleCenterStr" Header="Scale str" />
+				    <Styles:TkMenuItem Name="_miScaleCenterKeyFrame" Header="Scale frame" />
+				    <Styles:TkMenuItem Name="_miScaleCenterLayer" Header="Scale layer" />
+				    <Styles:TkMenuItem Name="_miScaleCenterStr" Header="Scale str" />
 				</MenuItem>
 				<MenuItem Header="Scale (from origin)" TokeiLibrary:WpfProperties.ImagePath="expand.png">
-					<MenuItem Name="_miScaleOriginKeyFrame" Header="Scale frame" />
-					<MenuItem Name="_miScaleOriginLayer" Header="Scale layer" />
-					<MenuItem Name="_miScaleOriginStr" Header="Scale str" />
+					<Styles:TkMenuItem Name="_miScaleOriginKeyFrame" Header="Scale frame" />
+					<Styles:TkMenuItem Name="_miScaleOriginLayer" Header="Scale layer" />
+					<Styles:TkMenuItem Name="_miScaleOriginStr" Header="Scale str" />
 				</MenuItem>
 				<MenuItem Header="Scale (world center)" TokeiLibrary:WpfProperties.ImagePath="expand.png">
-					<MenuItem Name="_miScaleWorldKeyFrame" Header="Scale frame" />
-					<MenuItem Name="_miScaleWorldLayer" Header="Scale layer" />
-					<MenuItem Name="_miScaleWorldStr" Header="Scale str" />
+					<Styles:TkMenuItem Name="_miScaleWorldKeyFrame" Header="Scale frame" />
+					<Styles:TkMenuItem Name="_miScaleWorldLayer" Header="Scale layer" />
+					<Styles:TkMenuItem Name="_miScaleWorldStr" Header="Scale str" />
 				</MenuItem>
 				<MenuItem Header="Flip horizontal" TokeiLibrary:WpfProperties.ImagePath="flip2.png">
-					<MenuItem Name="_miFlipHTexture" Header="Texture" />
-					<MenuItem Name="_miFlipH" Header="World center" />
-					<MenuItem Name="_miFlipH2" Header="Current frame origin" />
+					<Styles:TkMenuItem Name="_miFlipHTexture" Header="Texture" />
+					<Styles:TkMenuItem Name="_miFlipH" Header="World center" />
+					<Styles:TkMenuItem Name="_miFlipH2" Header="Current frame origin" />
 				</MenuItem>
 				<MenuItem Header="Flip vertical" TokeiLibrary:WpfProperties.ImagePath="flip.png">
-				    <MenuItem Name="_miFlipVTexture" Header="Texture" />
-				    <MenuItem Name="_miFlipV" Header="World center" />
-					<MenuItem Name="_miFlipV2" Header="Current frame origin" />
+				    <Styles:TkMenuItem Name="_miFlipVTexture" Header="Texture" />
+				    <Styles:TkMenuItem Name="_miFlipV" Header="World center" />
+					<Styles:TkMenuItem Name="_miFlipV2" Header="Current frame origin" />
 				</MenuItem>
-				<MenuItem Name="_miMergeStr" Header="Merge Str..." TokeiLibrary:WpfProperties.ImagePath="merge.png" />
+				<Styles:TkMenuItem Name="_miMergeStr" Header="Merge Str..." TokeiLibrary:WpfProperties.ImagePath="merge.png" />
 				<Separator />
 				<MenuItem Name="_miSelectBackground">
 					<MenuItem.Header>
@@ -91,20 +91,20 @@
 				<MenuItem.Header>
 					<Label Content="View" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="-5 0 -5 0" />
 				</MenuItem.Header>
-				<MenuItem Name="_miDrawReferenceSprite" Header="Draw reference sprite" />
+				<Styles:TkMenuItem Name="_miDrawReferenceSprite" Header="Draw reference sprite" />
 			</MenuItem>
 			<MenuItem>
                 <MenuItem.Header>
                     <Label Content="Script" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="-5 0 -5 0" />
                 </MenuItem.Header>
-				<MenuItem Name="_miScriptRunner" Click="_miScriptRunner_Click" Header="Script Runner..." TokeiLibrary:WpfProperties.ImagePath="dos.png" />
+				<Styles:TkMenuItem Name="_miScriptRunner" Click="_miScriptRunner_Click" Header="Script Runner..." TokeiLibrary:WpfProperties.ImagePath="dos.png" />
 			</MenuItem>
         </Menu>
         <DockPanel Name="_dpUndoRedo" Margin="155 0 0 0" HorizontalAlignment="Left">
             <wpfBugFix:ToggleMemoryButton x:Name="_tmbUndo" IsEnabled="False" PrimaryButtonImagePath="undo.png" DisplayFormat="Undo {0} action" />
             <wpfBugFix:ToggleMemoryButton x:Name="_tmbRedo" IsEnabled="False"  PrimaryButtonImagePath="redo.png" DisplayFormat="Redo {0} action" />
 			
-			<styles:FancyButton VerticalAlignment="Center" x:Name="_play" Height="20" Margin="3"  Width="60" HorizontalAlignment="Left"/>
+			<Styles:FancyButton VerticalAlignment="Center" x:Name="_play" Height="20" Margin="3"  Width="60" HorizontalAlignment="Left"/>
 			<ComboBox Margin="3" VerticalAlignment="Center" Grid.Row="3" Grid.Column="1" SelectedIndex="2" Name="_cbZoom" IsTextSearchEnabled="false" HorizontalAlignment="Left" Width="80" IsEditable="True" IsReadOnly="False">
                 <ComboBoxItem Content="25 %" />
                 <ComboBoxItem Content="50 %" />

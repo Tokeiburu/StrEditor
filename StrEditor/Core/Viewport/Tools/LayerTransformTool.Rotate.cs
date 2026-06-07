@@ -16,14 +16,6 @@ namespace StrEditor.Core.Viewport.Tools {
 
 			_hasRotated = true;
 			DoRotateRaw(viewport, args.Start, args.DeltaX, args.DeltaY);
-
-			try {
-				viewport.Controller.KeyFrameEditor.DisableEvents();
-				viewport.Controller.KeyFrameEditor.SetAngle(_renderer.Inter.Angle);
-			}
-			finally {
-				viewport.Controller.KeyFrameEditor.EnableEvents();
-			}
 		}
 
 		public void DoRotateRaw(FrameViewer viewport, System.Drawing.Point start, double deltaX, double deltaY) {
@@ -54,6 +46,7 @@ namespace StrEditor.Core.Viewport.Tools {
 			float angle = (float)((angle2 - angle1) * 360d / (2d * Math.PI));
 
 			_applyTransformRotate(inter, layerIdx, angle);
+			_kfe.OnValueChanged(KeyFrameValueType.Angle);
 		}
 
 		private void _applyTransformRotate(InterpolatedKeyFrame inter, int layerIdx, float angle) {
@@ -61,7 +54,7 @@ namespace StrEditor.Core.Viewport.Tools {
 			inter.Angle -= angle;
 
 			if (StrEditorConfiguration.GroupEdit) {
-				_applyBezierRotate(_keyFrameCopy.Bezier, inter.Bezier, angle);
+				_applyBezierRotate(_keyFrameCopy.BezierPositions, inter.BezierPositions, angle);
 
 				for (int index = 0; index < _str.Layers[layerIdx].KeyFrames.Count; index++) {
 					var keyFrame = _layerCopy[index];
@@ -70,7 +63,7 @@ namespace StrEditor.Core.Viewport.Tools {
 
 					_str.Layers[layerIdx].KeyFrames[index].Offset = inter.Offset + v;
 
-					_applyBezierRotate(keyFrame.Bezier, _str.Layers[layerIdx].KeyFrames[index].Bezier, angle);
+					_applyBezierRotate(keyFrame.BezierPositions, _str.Layers[layerIdx].KeyFrames[index].BezierPositions, angle);
 
 					_str.Layers[layerIdx].KeyFrames[index].Angle = keyFrame.Angle - angle;
 				}
@@ -103,6 +96,7 @@ namespace StrEditor.Core.Viewport.Tools {
 			int layerIdx = _renderer.LayerIndex;
 
 			_applyTransformRotate(inter, layerIdx, angle);
+			_kfe.OnValueChanged(KeyFrameValueType.Angle);
 		}
 
 		public void EndRotate() {
@@ -114,10 +108,6 @@ namespace StrEditor.Core.Viewport.Tools {
 			inter.Angle = _keyFrameCopy.Angle;
 
 			float angle = rotation - _keyFrameCopy.Angle;
-
-			if (angle > 180) {
-				rotation -= 360;
-			}
 
 			if (StrEditorConfiguration.GroupEdit) {
 				// Restore layer
@@ -134,13 +124,13 @@ namespace StrEditor.Core.Viewport.Tools {
 					var offset = inter.Offset + v;
 					_str.Commands.SetOffset(layerIdx, index, offset.X, offset.Y);
 
-					v = new TkVector2(keyFrame.Bezier[0], keyFrame.Bezier[1]);
+					v = new TkVector2(keyFrame.BezierPositions[0], keyFrame.BezierPositions[1]);
 					v.RotateZ(-angle);
 
-					var v2 = new TkVector2(keyFrame.Bezier[2], keyFrame.Bezier[3]);
+					var v2 = new TkVector2(keyFrame.BezierPositions[2], keyFrame.BezierPositions[3]);
 					v2.RotateZ(-angle);
 
-					_str.Commands.SetBezier(layerIdx, index, new float[] {
+					_str.Commands.SetBezierPositions(layerIdx, index, new float[] {
 						v.X,
 						v.Y,
 						v2.X,

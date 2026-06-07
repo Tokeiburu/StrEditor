@@ -72,9 +72,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(DllsPath)ICSharpCode.AvalonEdit.dll</HintPath>
     </Reference>
-    <Reference Include="Ionic.Zip">
-      <HintPath>$(DllsPath)Ionic.Zip.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CodeAnalysis, Version=4.14.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeAnalysis.Common.4.14.0\lib\netstandard2.0\Microsoft.CodeAnalysis.dll</HintPath>
     </Reference>
@@ -182,6 +179,7 @@
     <Compile Include="Core\Viewport\Tools\LayerTransformTool.Rotate.cs" />
     <Compile Include="Core\Viewport\Tools\LayerTransformTool.Translate.cs" />
     <Compile Include="Core\Viewport\Tools\OriginTool.cs" />
+    <Compile Include="Core\Viewport\Tools\BiasTool.cs" />
     <Compile Include="Core\Viewport\Tools\UvTranslateTool.cs" />
     <Compile Include="Core\Viewport\Tools\ViewPanTool.cs" />
     <Compile Include="Core\Viewport\Tools\BezierTool.cs" />
@@ -218,6 +216,9 @@
     </Compile>
     <Compile Include="WPF\SettingsDialog.xaml.cs">
       <DependentUpon>SettingsDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WPF\SimpleSlider.xaml.cs">
+      <DependentUpon>SimpleSlider.xaml</DependentUpon>
     </Compile>
     <Compile Include="WPF\TexturesEdit.xaml.cs">
       <DependentUpon>TexturesEdit.xaml</DependentUpon>
@@ -271,6 +272,10 @@
     <Page Include="WPF\SettingsDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="WPF\SimpleSlider.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="WPF\TexturesEdit.xaml">
       <SubType>Designer</SubType>

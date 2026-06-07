@@ -27,18 +27,17 @@ namespace StrEditor.Core.KeyframeEditor {
 	public partial class KeyFrameEditor : UserControl {
 		private InterpolatedKeyFrame _currentFrame;
 		private InterpolatedKeyFrame _copyFrame;
+		private LayerRenderer _layerRenderer;
 		private bool _isLoading;
 		private bool _fieldEditing;
+		private bool _beginBiasEdit;
 		private Str _str;
-		private TextBox[] _tbVertices;
-		private TextBox[] _tbTextCoords;
-		private TextBox[] _tbBezier;
+		private TextBox[] _tbPositions;
+		private TextBox[] _tbUVs;
+		private TextBox[] _tbBezierPositions;
 		private StrController _controller;
 		private UpdateDispatcher _upKeyFrameLoad = new UpdateDispatcher(100);
 		private UpdateDispatcher _upKeyRefreshField = new UpdateDispatcher(50);
-
-		const int _sliderRange = 40;
-		const int _sliderMid = _sliderRange / 2;
 
 		public bool CanEdit => _currentFrame != null;
 		public bool HasCopyFrame => _copyFrame != null;
@@ -58,27 +57,27 @@ namespace StrEditor.Core.KeyframeEditor {
 		}
 
 		private void _initializeTextBoxReferences() {
-			_tbVertices = new TextBox[8];
-			_tbVertices[0] = _tbCoordsTLX;
-			_tbVertices[4] = _tbCoordsTLY;
-			_tbVertices[1] = _tbCoordsTRX;
-			_tbVertices[5] = _tbCoordsTRY;
-			_tbVertices[2] = _tbCoordsBRX;
-			_tbVertices[6] = _tbCoordsBRY;
-			_tbVertices[3] = _tbCoordsBLX;
-			_tbVertices[7] = _tbCoordsBLY;
+			_tbPositions = new TextBox[8];
+			_tbPositions[0] = _tbPositionsTLX;
+			_tbPositions[4] = _tbPositionsTLY;
+			_tbPositions[1] = _tbPositionsTRX;
+			_tbPositions[5] = _tbPositionsTRY;
+			_tbPositions[2] = _tbPositionsBRX;
+			_tbPositions[6] = _tbPositionsBRY;
+			_tbPositions[3] = _tbPositionsBLX;
+			_tbPositions[7] = _tbPositionsBLY;
 
-			_tbTextCoords = new TextBox[4];
-			_tbTextCoords[0] = _tbUVTLX;
-			_tbTextCoords[1] = _tbUVTLY;
-			_tbTextCoords[2] = _tbUVTRX;
-			_tbTextCoords[3] = _tbUVTRY;
+			_tbUVs = new TextBox[4];
+			_tbUVs[0] = _tbUVTLX;
+			_tbUVs[1] = _tbUVTLY;
+			_tbUVs[2] = _tbUVTRX;
+			_tbUVs[3] = _tbUVTRY;
 
-			_tbBezier = new TextBox[4];
-			_tbBezier[0] = _tbBezierP1X;
-			_tbBezier[1] = _tbBezierP1Y;
-			_tbBezier[2] = _tbBezierP2X;
-			_tbBezier[3] = _tbBezierP2Y;
+			_tbBezierPositions = new TextBox[4];
+			_tbBezierPositions[0] = _tbBezierP1X;
+			_tbBezierPositions[1] = _tbBezierP1Y;
+			_tbBezierPositions[2] = _tbBezierP2X;
+			_tbBezierPositions[3] = _tbBezierP2Y;
 		}
 
 		private LayerRenderer _currentEditLayer;
@@ -116,7 +115,7 @@ namespace StrEditor.Core.KeyframeEditor {
 				return;
 
 			try {
-				_str.Commands.ChangeFps(fps);
+				_str.Commands.SetFps(fps);
 			}
 			catch (Exception err) {
 				ErrorHandler.HandleException(err);
@@ -186,6 +185,7 @@ namespace StrEditor.Core.KeyframeEditor {
 
 		private void _loadKeyFrame(StrLayer layer, InterpolatedKeyFrame inter) {
 			_currentFrame = inter;
+			_layerRenderer = _controller.FrameViewer.GetSelectedRenderer();
 
 			try {
 				_isLoading = true;
@@ -197,25 +197,25 @@ namespace StrEditor.Core.KeyframeEditor {
 				SetOffsetX(inter.Offset.X);
 				SetOffsetY(inter.Offset.Y);
 
-				_cbSrc.SelectedIndex = inter.SourceAlpha - 1;
-				_cbDst.SelectedIndex = inter.DestinationAlpha - 1;
+				_cbSrc.SelectedIndex = inter.BlendSrc - 1;
+				_cbDst.SelectedIndex = inter.BlendDst - 1;
 
 				UpdateTextures(layer, true);
 
-				SetVertices(inter.Vertices);
-				SetTextCoords(inter.TextCoords);
-				SetBezier(inter.Bezier);
+				SetPositions(inter.Positions);
+				SetUVs(inter.UVs);
+				SetBezier(inter.BezierPositions);
 
 				var keyFrame = layer[inter.KeyIndex];
 				SetScaleBias(keyFrame.ScaleBias);
 				SetOffsetBias(keyFrame.OffsetBias);
 				SetAngleBias(keyFrame.AngleBias);
-				UpdateScale(_currentFrame.Vertices);
+				UpdateScale(_currentFrame.Positions);
 
 				_isInterpolated.IsChecked = keyFrame.IsInterpolated;
 				SetFrameIndex(inter.FrameIndex);
 
-				_cbAnimations.SelectedIndex = inter.AnimationType;
+				_cbAnimations.SelectedIndex = (int)inter.AnimationType;
 
 				if (inter.Delay == 0) {
 					_tbDelay.Text = "";
@@ -245,11 +245,11 @@ namespace StrEditor.Core.KeyframeEditor {
 
 				_selectedTexture.SelectedIndex = -1;
 
-				var vertices = new float[8];
+				var positions = new float[8];
 
-				SetVertices(vertices);
-				SetTextCoords(vertices);
-				SetBezier(vertices);
+				SetPositions(positions);
+				SetUVs(positions);
+				SetBezier(positions);
 				SetFrameIndex(_controller.TimelineEditor.TimelineFrameIndex);
 				SetScale(0, 0);
 
@@ -263,31 +263,6 @@ namespace StrEditor.Core.KeyframeEditor {
 			finally {
 				_isLoading = false;
 			}
-		}
-
-		private void _setSlider(SliderColor slider, float bias) {
-			bias = bias + _sliderMid;
-			slider.SetPosition(bias / _sliderRange, true);
-		}
-
-		public void _execute(Action<KeyFrameEditor> action) {
-			bool old = _isLoading;
-
-			try {
-				DisableEvents();
-				action(this);
-			}
-			finally {
-				EnableEvents();
-			}
-
-			_isLoading = old;
-		}
-
-		public void Execute(Action<KeyFrameEditor> action) {
-			_controller.PlayAnimation.Stop();
-			//_upKeyRefreshField.Execute(() => this.Dispatch(() => Execute(action)));
-			_upKeyRefreshField.Execute(() => Dispatcher.BeginInvoke(new Action(() => _execute(action)), DispatcherPriority.Render));
 		}
 
 		public void InitComponent(StrController controller) {
@@ -328,7 +303,7 @@ namespace StrEditor.Core.KeyframeEditor {
 				var child = VisualTreeHelper.GetChild(parent, i);
 
 				if (child is T typed &&
-					(child is SliderColor ||
+					(child is SimpleSlider ||
 					child is TextBox ||
 					child is CheckBox ||
 					child is QuickColorSelector ||
@@ -376,25 +351,25 @@ namespace StrEditor.Core.KeyframeEditor {
 			_qcsKeyFrameColor.Color = Color.FromArgb((byte)color[3], (byte)color[0], (byte)color[1], (byte)color[2]);
 		}
 
-		public void SetVertices(float[] vertices) {
+		public void SetPositions(float[] positions) {
 			for (int i = 0; i < 4; i++) {
-				_tbVertices[i].Text = vertices[i].ToString("0.##", CultureInfo.InvariantCulture);
-				_tbVertices[i + 4].Text = (-vertices[i + 4]).ToString("0.##", CultureInfo.InvariantCulture);
+				_tbPositions[i].Text = positions[i].ToString("0.##", CultureInfo.InvariantCulture);
+				_tbPositions[i + 4].Text = (-positions[i + 4]).ToString("0.##", CultureInfo.InvariantCulture);
 			}
 		}
 
-		public void SetTextCoords(float[] vertices) {
+		public void SetUVs(float[] positions) {
 			if (!StrEditorConfiguration.ShowUvCoords)
 				return;
 
 			for (int i = 0; i < 4; i++) {
-				_tbTextCoords[i].Text = vertices[i].ToString("0.##", CultureInfo.InvariantCulture);
+				_tbUVs[i].Text = positions[i].ToString("0.##", CultureInfo.InvariantCulture);
 			}
 		}
 
-		public void SetBezier(float[] vertices) {
+		public void SetBezier(float[] bezierPositions) {
 			for (int i = 0; i < 4; i++) {
-				_tbBezier[i].Text = vertices[i].ToString("0.##", CultureInfo.InvariantCulture);
+				_tbBezierPositions[i].Text = bezierPositions[i].ToString("0.##", CultureInfo.InvariantCulture);
 			}
 		}
 
@@ -404,17 +379,17 @@ namespace StrEditor.Core.KeyframeEditor {
 
 		public void SetScaleBias(float bias) {
 			_tbScaleBias.Text = bias.ToString(CultureInfo.InvariantCulture);
-			_setSlider(_sliderScale, bias);
+			_sliderScale.Value = bias;
 		}
 
 		public void SetOffsetBias(float bias) {
 			_tbOffsetBias.Text = bias.ToString(CultureInfo.InvariantCulture);
-			_setSlider(_sliderOffset, bias);
+			_sliderOffset.Value = bias;
 		}
 
 		public void SetAngleBias(float bias) {
 			_tbAngleBias.Text = bias.ToString(CultureInfo.InvariantCulture);
-			_setSlider(_sliderAngle, bias);
+			_sliderAngle.Value = bias;
 		}
 
 		public void SetScale(float sx, float sy) {
@@ -422,7 +397,7 @@ namespace StrEditor.Core.KeyframeEditor {
 			_tbScaleY.Text = sy.ToString("0.##", CultureInfo.InvariantCulture);
 		}
 
-		public void UpdateScale(float[] vertices) {
+		public void UpdateScale(float[] positions) {
 			var renderer = _controller.FrameViewer.GetSelectedRenderer();
 
 			if (renderer == null) {
@@ -431,7 +406,7 @@ namespace StrEditor.Core.KeyframeEditor {
 			}
 
 			for (int i = 0; i < 8; i++)
-				_originalVertices[i] = _currentFrame.Vertices[i];
+				_originalPositions[i] = _currentFrame.Positions[i];
 
 			var scale = _getFrameScale(renderer, true);
 			SetScale(scale.X, scale.Y);
@@ -452,6 +427,17 @@ namespace StrEditor.Core.KeyframeEditor {
 			}
 
 			_copyFrame = InterpolatedKeyFrame.Interpolate(_str, _currentFrame.LayerIdx, _controller.TimelineEditor.SelectedFrameIndex);
+		}
+
+		private void _slider_ValueDragStart(object sender, double value) {
+			_layerRenderer.Inter.BezierPositions = _currentFrame.BezierPositions;
+			_beginBiasEdit = true;
+			_interactionManager.SetActiveTool(_interactionManager.BiasTool);
+		}
+
+		private void _slider_ValueDragEnd(object sender, double value) {
+			_beginBiasEdit = false;
+			_interactionManager.SetActiveTool(null);
 		}
 	}
 }

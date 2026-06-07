@@ -91,7 +91,7 @@ namespace StrEditor.Core.StrConverters {
 												keyFrame.FrameIndex = int.Parse(data[1]);
 												break;
 											case "anitype":
-												keyFrame.AnimationType = int.Parse(data[1]);
+												keyFrame.AnimationType = (AnimationType)int.Parse(data[1]);
 												break;
 											case "delay":
 												keyFrame.Delay = FormatConverters.SingleConverter(data[1]);
@@ -102,23 +102,23 @@ namespace StrEditor.Core.StrConverters {
 												break;
 											case "uv":
 												subSplit = data[1].Split(',');
-												keyFrame.Uv[0] = FormatConverters.SingleConverter(subSplit[0]);
-												keyFrame.Uv[1] = FormatConverters.SingleConverter(subSplit[1]);
+												keyFrame.UVs[0] = FormatConverters.SingleConverter(subSplit[0]);
+												keyFrame.UVs[1] = FormatConverters.SingleConverter(subSplit[1]);
 												break;
 											case "uvs":
 												subSplit = data[1].Split(',');
-												keyFrame.Uv[2] = FormatConverters.SingleConverter(subSplit[0]);
-												keyFrame.Uv[3] = FormatConverters.SingleConverter(subSplit[1]);
+												keyFrame.UVs[2] = FormatConverters.SingleConverter(subSplit[0]);
+												keyFrame.UVs[3] = FormatConverters.SingleConverter(subSplit[1]);
 												break;
 											case "uv2":
 												subSplit = data[1].Split(',');
-												keyFrame.Uv[4] = FormatConverters.SingleConverter(subSplit[0]);
-												keyFrame.Uv[5] = FormatConverters.SingleConverter(subSplit[1]);
+												keyFrame.UVs[4] = FormatConverters.SingleConverter(subSplit[0]);
+												keyFrame.UVs[5] = FormatConverters.SingleConverter(subSplit[1]);
 												break;
 											case "uvs2":
 												subSplit = data[1].Split(',');
-												keyFrame.Uv[6] = FormatConverters.SingleConverter(subSplit[0]);
-												keyFrame.Uv[7] = FormatConverters.SingleConverter(subSplit[1]);
+												keyFrame.UVs[6] = FormatConverters.SingleConverter(subSplit[0]);
+												keyFrame.UVs[7] = FormatConverters.SingleConverter(subSplit[1]);
 												break;
 											case "angle":
 												subSplit = data[1].Split(',');
@@ -130,26 +130,26 @@ namespace StrEditor.Core.StrConverters {
 												keyFrame.Color[1] = FormatConverters.SingleConverter(subSplit[1]);
 												keyFrame.Color[2] = FormatConverters.SingleConverter(subSplit[2]);
 												keyFrame.Color[3] = FormatConverters.SingleConverter(subSplit[3]);
-												keyFrame.SourceAlpha = int.Parse(subSplit[4]);
-												keyFrame.DestinationAlpha = int.Parse(subSplit[5]);
+												keyFrame.BlendSrc = int.Parse(subSplit[4]);
+												keyFrame.BlendDst = int.Parse(subSplit[5]);
 												break;
 											case "points":
 												subSplit = data[1].ReplaceAll("  ", " ").ReplaceAll(" ", ",").Split(',');
-												keyFrame.Xy[0] = FormatConverters.SingleConverter(subSplit[0]);
-												keyFrame.Xy[4] = FormatConverters.SingleConverter(subSplit[1]);
-												keyFrame.Xy[1] = FormatConverters.SingleConverter(subSplit[2]);
-												keyFrame.Xy[5] = FormatConverters.SingleConverter(subSplit[3]);
-												keyFrame.Xy[2] = FormatConverters.SingleConverter(subSplit[4]);
-												keyFrame.Xy[6] = FormatConverters.SingleConverter(subSplit[5]);
-												keyFrame.Xy[3] = FormatConverters.SingleConverter(subSplit[6]);
-												keyFrame.Xy[7] = FormatConverters.SingleConverter(subSplit[7]);
+												keyFrame.Positions[0] = FormatConverters.SingleConverter(subSplit[0]);
+												keyFrame.Positions[4] = FormatConverters.SingleConverter(subSplit[1]);
+												keyFrame.Positions[1] = FormatConverters.SingleConverter(subSplit[2]);
+												keyFrame.Positions[5] = FormatConverters.SingleConverter(subSplit[3]);
+												keyFrame.Positions[2] = FormatConverters.SingleConverter(subSplit[4]);
+												keyFrame.Positions[6] = FormatConverters.SingleConverter(subSplit[5]);
+												keyFrame.Positions[3] = FormatConverters.SingleConverter(subSplit[6]);
+												keyFrame.Positions[7] = FormatConverters.SingleConverter(subSplit[7]);
 												break;
 											case "bezier":
 												subSplit = data[1].ReplaceAll("  ", " ").ReplaceAll(" ", ",").Split(',');
-												keyFrame.Bezier[0] = FormatConverters.SingleConverter(subSplit[0]);
-												keyFrame.Bezier[1] = FormatConverters.SingleConverter(subSplit[1]);
-												keyFrame.Bezier[2] = FormatConverters.SingleConverter(subSplit[2]);
-												keyFrame.Bezier[3] = FormatConverters.SingleConverter(subSplit[3]);
+												keyFrame.BezierPositions[0] = FormatConverters.SingleConverter(subSplit[0]);
+												keyFrame.BezierPositions[1] = FormatConverters.SingleConverter(subSplit[1]);
+												keyFrame.BezierPositions[2] = FormatConverters.SingleConverter(subSplit[2]);
+												keyFrame.BezierPositions[3] = FormatConverters.SingleConverter(subSplit[3]);
 												break;
 											case "posbias":
 												keyFrame.OffsetBias = FormatConverters.SingleConverter(data[1]);
@@ -247,52 +247,52 @@ namespace StrEditor.Core.StrConverters {
 					b.AppendLine("        anitype=" + keyFrame.AnimationType);
 					b.AppendLine("        delay=" + string.Format("{0}", (float.IsNaN(keyFrame.Delay) || float.IsInfinity(keyFrame.Delay) ? 0 : keyFrame.Delay).ToString("0.0000", CultureInfo.InvariantCulture)));
 					b.AppendLine("        pos=" + string.Format("{0},{1}", keyFrame.Offset.X.ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.Offset.Y.ToString("0.0000", CultureInfo.InvariantCulture)));
-					b.AppendLine("        uv=" + string.Format("{0},{1}", keyFrame.Uv[0].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.Uv[1].ToString("0.0000", CultureInfo.InvariantCulture)));
-					b.AppendLine("        uvs=" + string.Format("{0},{1}", keyFrame.Uv[2].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.Uv[3].ToString("0.0000", CultureInfo.InvariantCulture)));
-					b.AppendLine("        uv2=" + string.Format("{0},{1}", keyFrame.Uv[4].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.Uv[5].ToString("0.0000", CultureInfo.InvariantCulture)));
-					b.AppendLine("        uvs2=" + string.Format("{0},{1}", keyFrame.Uv[6].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.Uv[7].ToString("0.0000", CultureInfo.InvariantCulture)));
+					b.AppendLine("        uv=" + string.Format("{0},{1}", keyFrame.UVs[0].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.UVs[1].ToString("0.0000", CultureInfo.InvariantCulture)));
+					b.AppendLine("        uvs=" + string.Format("{0},{1}", keyFrame.UVs[2].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.UVs[3].ToString("0.0000", CultureInfo.InvariantCulture)));
+					b.AppendLine("        uv2=" + string.Format("{0},{1}", keyFrame.UVs[4].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.UVs[5].ToString("0.0000", CultureInfo.InvariantCulture)));
+					b.AppendLine("        uvs2=" + string.Format("{0},{1}", keyFrame.UVs[6].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.UVs[7].ToString("0.0000", CultureInfo.InvariantCulture)));
 
-					float maxX = keyFrame.Xy[0];
-					float minX = keyFrame.Xy[0];
+					float maxX = keyFrame.Positions[0];
+					float minX = keyFrame.Positions[0];
 
 					for (int i = 1; i < 4; i++) {
-						if (keyFrame.Xy[i] > maxX)
-							maxX = keyFrame.Xy[i];
-						if (keyFrame.Xy[i] < minX)
-							minX = keyFrame.Xy[i];
+						if (keyFrame.Positions[i] > maxX)
+							maxX = keyFrame.Positions[i];
+						if (keyFrame.Positions[i] < minX)
+							minX = keyFrame.Positions[i];
 					}
 
-					float maxY = keyFrame.Xy[4];
-					float minY = keyFrame.Xy[4];
+					float maxY = keyFrame.Positions[4];
+					float minY = keyFrame.Positions[4];
 
 					for (int i = 5; i < 8; i++) {
-						if (keyFrame.Xy[i] > maxY)
-							maxY = keyFrame.Xy[i];
-						if (keyFrame.Xy[i] < minY)
-							minY = keyFrame.Xy[i];
+						if (keyFrame.Positions[i] > maxY)
+							maxY = keyFrame.Positions[i];
+						if (keyFrame.Positions[i] < minY)
+							minY = keyFrame.Positions[i];
 					}
 
 					b.AppendLine("        scale=" + string.Format("{0},{1}", (maxX - minX).ToString("0.0000", CultureInfo.InvariantCulture), (maxY - minY).ToString("0.0000", CultureInfo.InvariantCulture)));
 					b.AppendLine("        angle=0.0000,0.0000," + string.Format("{0}", (keyFrame.Angle * (1024f / 360f)).ToString("0.0000", CultureInfo.InvariantCulture)));
 					b.AppendLine("        color=" + string.Format("{0},{1},{2},{3}, {4},{5}",
 						keyFrame.Color[0].ToString("0.0", CultureInfo.InvariantCulture), keyFrame.Color[1].ToString("0.0", CultureInfo.InvariantCulture), keyFrame.Color[2].ToString("0.0", CultureInfo.InvariantCulture), keyFrame.Color[3].ToString("0.0", CultureInfo.InvariantCulture),
-						keyFrame.SourceAlpha, keyFrame.DestinationAlpha));
+						keyFrame.BlendSrc, keyFrame.BlendDst));
 
 					b.AppendLine("        mtpreset=0");
 
 					b.AppendLine("        points=" + string.Format("{0},{1}  {2},{3}  {4},{5}  {6},{7}",
-						keyFrame.Xy[0].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.Xy[4].ToString("0.0000", CultureInfo.InvariantCulture),
-						keyFrame.Xy[1].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.Xy[5].ToString("0.0000", CultureInfo.InvariantCulture),
-						keyFrame.Xy[2].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.Xy[6].ToString("0.0000", CultureInfo.InvariantCulture),
-						keyFrame.Xy[3].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.Xy[7].ToString("0.0000", CultureInfo.InvariantCulture)));
+						keyFrame.Positions[0].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.Positions[4].ToString("0.0000", CultureInfo.InvariantCulture),
+						keyFrame.Positions[1].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.Positions[5].ToString("0.0000", CultureInfo.InvariantCulture),
+						keyFrame.Positions[2].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.Positions[6].ToString("0.0000", CultureInfo.InvariantCulture),
+						keyFrame.Positions[3].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.Positions[7].ToString("0.0000", CultureInfo.InvariantCulture)));
 
 					b.AppendLine("        rpoints=" + string.Format("{0},{1}  {2},{3}  {4},{5}  {6},{7}",
-						keyFrame.Xy[0].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.Xy[4].ToString("0.0000", CultureInfo.InvariantCulture),
-						keyFrame.Xy[1].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.Xy[5].ToString("0.0000", CultureInfo.InvariantCulture),
-						keyFrame.Xy[2].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.Xy[6].ToString("0.0000", CultureInfo.InvariantCulture),
-						keyFrame.Xy[3].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.Xy[7].ToString("0.0000", CultureInfo.InvariantCulture)));
+						keyFrame.Positions[0].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.Positions[4].ToString("0.0000", CultureInfo.InvariantCulture),
+						keyFrame.Positions[1].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.Positions[5].ToString("0.0000", CultureInfo.InvariantCulture),
+						keyFrame.Positions[2].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.Positions[6].ToString("0.0000", CultureInfo.InvariantCulture),
+						keyFrame.Positions[3].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.Positions[7].ToString("0.0000", CultureInfo.InvariantCulture)));
 
-					b.AppendLine("        bezier=" + string.Format("{0},{1}  {2},{3}", keyFrame.Bezier[0].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.Bezier[1].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.Bezier[2].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.Bezier[3].ToString("0.0000", CultureInfo.InvariantCulture)));
+					b.AppendLine("        bezier=" + string.Format("{0},{1}  {2},{3}", keyFrame.BezierPositions[0].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.BezierPositions[1].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.BezierPositions[2].ToString("0.0000", CultureInfo.InvariantCulture), keyFrame.BezierPositions[3].ToString("0.0000", CultureInfo.InvariantCulture)));
 					b.AppendLine("        afbias=" + string.Format("{0}", 0.ToString("0.0000", CultureInfo.InvariantCulture)));
 					b.AppendLine("        posbias=" + string.Format("{0}", keyFrame.OffsetBias.ToString("0.0000", CultureInfo.InvariantCulture)));
 					b.AppendLine("        ptbias=" + string.Format("{0}", keyFrame.ScaleBias.ToString("0.0000", CultureInfo.InvariantCulture)));

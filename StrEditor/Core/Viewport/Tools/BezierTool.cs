@@ -55,9 +55,6 @@ namespace StrEditor.Core.Viewport.Tools {
 			_hasBeenModified = true;
 			
 			DoEventRaw(args.DeltaX, args.DeltaY, args.PointId, (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control);
-			_viewport.Controller.KeyFrameEditor.Execute(kfs => {
-				kfs.SetBezier(_renderer.Inter.Bezier);
-			});
 			_viewport.QuickUpdate();
 			return;
 		}
@@ -71,31 +68,33 @@ namespace StrEditor.Core.Viewport.Tools {
 			var inter = _renderer.Inter;
 
 			if (both) {
-				var v0 = new TkVector2(_keyFrameCopy.Bezier[2 * point], _keyFrameCopy.Bezier[2 * point + 1]);
+				var v0 = new TkVector2(_keyFrameCopy.BezierPositions[2 * point], _keyFrameCopy.BezierPositions[2 * point + 1]);
 				var v1 = v0 + vertex;
 
 				var angle = TkVector2.CalculateAngle(v0, v1);
 				var sign = TkVector2.CalculateSignedAngle(v0, v1);
 
-				inter.Bezier[2 * point] = _keyFrameCopy.Bezier[2 * point] + vertex.X;
-				inter.Bezier[2 * point + 1] = _keyFrameCopy.Bezier[2 * point + 1] + vertex.Y;
+				inter.BezierPositions[2 * point] = _keyFrameCopy.BezierPositions[2 * point] + vertex.X;
+				inter.BezierPositions[2 * point + 1] = _keyFrameCopy.BezierPositions[2 * point + 1] + vertex.Y;
 
 				if (double.IsNaN(angle))
 					return;
 
 				point = (point + 1) % 2;
 
-				v0 = new TkVector2(_keyFrameCopy.Bezier[2 * point], _keyFrameCopy.Bezier[2 * point + 1]);
+				v0 = new TkVector2(_keyFrameCopy.BezierPositions[2 * point], _keyFrameCopy.BezierPositions[2 * point + 1]);
 				vertex = v0;
 
 				vertex.RotateZ((float)MathHelper.RadiansToDegrees(angle * (sign < 0 ? 1 : -1)));
-				inter.Bezier[2 * point] = vertex.X;
-				inter.Bezier[2 * point + 1] = vertex.Y;
+				inter.BezierPositions[2 * point] = vertex.X;
+				inter.BezierPositions[2 * point + 1] = vertex.Y;
 			}
 			else {
-				inter.Bezier[2 * point] = _keyFrameCopy.Bezier[2 * point] + vertex.X;
-				inter.Bezier[2 * point + 1] = _keyFrameCopy.Bezier[2 * point + 1] + vertex.Y;
+				inter.BezierPositions[2 * point] = _keyFrameCopy.BezierPositions[2 * point] + vertex.X;
+				inter.BezierPositions[2 * point + 1] = _keyFrameCopy.BezierPositions[2 * point + 1] + vertex.Y;
 			}
+
+			_kfe.OnValueChanged(KeyFrameValueType.BezierP1 + point);
 		}
 
 		public void End() {
@@ -104,7 +103,7 @@ namespace StrEditor.Core.Viewport.Tools {
 
 			InterpolatedKeyFrame.ConvertToFrame(inter, _str);
 			_str.Commands.Begin();
-			_str.Commands.SetBezier(_renderer.LayerIndex, inter.KeyIndex, inter.Bezier);
+			_str.Commands.SetBezierPositions(_renderer.LayerIndex, inter.KeyIndex, inter.BezierPositions);
 			_str.Commands.End();
 		}
 	}

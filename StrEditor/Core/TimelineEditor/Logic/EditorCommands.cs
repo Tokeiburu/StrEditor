@@ -138,7 +138,7 @@ namespace StrEditor.Core.TimelineEditor.Logic {
 
 				foreach (var layerIndex in _editor.Selection.Layers) {
 					foreach (var keyIndex in _editor.Selection.GetActiveKeysDescending(layerIndex)) {
-						_controller.Str.Commands.SetBezier(layerIndex, keyIndex, bezier);
+						_controller.Str.Commands.SetBezierPositions(layerIndex, keyIndex, bezier);
 					}
 				}
 			}
@@ -326,6 +326,37 @@ namespace StrEditor.Core.TimelineEditor.Logic {
 			}
 			catch (Exception err) {
 				ErrorHandler.HandleException(err);
+			}
+		}
+
+		public void CopyPreviousKey(Selection selection) {
+			var str = _controller.Str;
+
+			int frameIndex = selection.SelectedFrame;
+
+			if (frameIndex <= 0)
+				return;
+
+			try {
+				var layer = str[selection.SelectedLayer];
+
+				str.Commands.Begin();
+
+				var previousKeyFrame = layer[layer.FrameIndex2KeyIndex[frameIndex - 1]];
+
+				if (previousKeyFrame == null)
+					return;
+
+				var newKeyFrame = new StrKeyFrame(previousKeyFrame);
+				newKeyFrame.FrameIndex = frameIndex;
+
+				str.Commands.SetKey(selection.StartLayer, selection.StartFrame, newKeyFrame);
+			}
+			catch (Exception err) {
+				ErrorHandler.HandleException(err);
+			}
+			finally {
+				str.Commands.End();
 			}
 		}
 
@@ -550,7 +581,7 @@ namespace StrEditor.Core.TimelineEditor.Logic {
 					}
 				}
 
-				str.Commands.ChangeMaxFrame(maxFrames - 1);
+				str.Commands.SetMaxFrame(maxFrames - 1);
 			}
 			catch (Exception err) {
 				ErrorHandler.HandleException(err);
@@ -565,11 +596,11 @@ namespace StrEditor.Core.TimelineEditor.Logic {
 			Blend,
 			Offset,
 			Angle,
-			Vertices,
+			Positions,
 			Texture,
 			Animation,
 			Bias,
-			Bezier,
+			BezierPositions,
 		}
 
 		public void PasteData(PasteDataType type) {
@@ -584,8 +615,8 @@ namespace StrEditor.Core.TimelineEditor.Logic {
 
 				_controller.KeyFrameEditor.ApplyCommand((layerIndex, keyIndex) => {
 					switch(type) {
-						case PasteDataType.Bezier:
-							_controller.Str.Commands.SetBezier(layerIndex, keyIndex, _controller.KeyFrameEditor.CopyFrame.Bezier);
+						case PasteDataType.BezierPositions:
+							_controller.Str.Commands.SetBezierPositions(layerIndex, keyIndex, _controller.KeyFrameEditor.CopyFrame.BezierPositions);
 							break;
 						case PasteDataType.Bias:
 							_controller.Str.Commands.SetOffsetBias(layerIndex, keyIndex, _controller.KeyFrameEditor.CopyFrame.OffsetBias);
@@ -593,13 +624,13 @@ namespace StrEditor.Core.TimelineEditor.Logic {
 							_controller.Str.Commands.SetAngleBias(layerIndex, keyIndex, _controller.KeyFrameEditor.CopyFrame.AngleBias);
 							break;
 						case PasteDataType.Animation:
-							_controller.Str.Commands.ChangeAnimationType(layerIndex, keyIndex, _controller.KeyFrameEditor.CopyFrame.AnimationType);
+							_controller.Str.Commands.SetAnimationType(layerIndex, keyIndex, _controller.KeyFrameEditor.CopyFrame.AnimationType);
 							break;
 						case PasteDataType.Texture:
-							_controller.Str.Commands.ChangeTextureIndex(layerIndex, keyIndex, _controller.KeyFrameEditor.CopyFrame.TextureIndex);
+							_controller.Str.Commands.SetTextureIndex(layerIndex, keyIndex, _controller.KeyFrameEditor.CopyFrame.TextureIndex);
 							break;
-						case PasteDataType.Vertices:
-							_controller.Str.Commands.SetVertices(layerIndex, keyIndex, _controller.KeyFrameEditor.CopyFrame.Vertices);
+						case PasteDataType.Positions:
+							_controller.Str.Commands.SetPositions(layerIndex, keyIndex, _controller.KeyFrameEditor.CopyFrame.Positions);
 							break;
 						case PasteDataType.Angle:
 							_controller.Str.Commands.SetAngle(layerIndex, keyIndex, _controller.KeyFrameEditor.CopyFrame.Angle);
@@ -608,11 +639,11 @@ namespace StrEditor.Core.TimelineEditor.Logic {
 							_controller.Str.Commands.SetOffset(layerIndex, keyIndex, _controller.KeyFrameEditor.CopyFrame.Offset.X, _controller.KeyFrameEditor.CopyFrame.Offset.Y);
 							break;
 						case PasteDataType.Blend:
-							_controller.Str.Commands.SetSrcBlend(layerIndex, keyIndex, _controller.KeyFrameEditor.CopyFrame.SourceAlpha);
-							_controller.Str.Commands.SetDstBlend(layerIndex, keyIndex, _controller.KeyFrameEditor.CopyFrame.DestinationAlpha);
+							_controller.Str.Commands.SetBlendSrc(layerIndex, keyIndex, _controller.KeyFrameEditor.CopyFrame.BlendSrc);
+							_controller.Str.Commands.SetBlendDst(layerIndex, keyIndex, _controller.KeyFrameEditor.CopyFrame.BlendDst);
 							break;
 						case PasteDataType.Color:
-							_controller.Str.Commands.ChangeColor(layerIndex, keyIndex,
+							_controller.Str.Commands.SetColor(layerIndex, keyIndex,
 								_controller.KeyFrameEditor.CopyFrame.Color[3],
 								_controller.KeyFrameEditor.CopyFrame.Color[0],
 								_controller.KeyFrameEditor.CopyFrame.Color[1],

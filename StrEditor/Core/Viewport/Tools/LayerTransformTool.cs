@@ -59,10 +59,6 @@ namespace StrEditor.Core.Viewport.Tools {
 						viewport.QuickUpdate();
 					}
 
-					if (_hasScaled) {
-						UpdateKeyFrameScalingData(viewport);
-					}
-
 					return true;
 				case MouseEventState.MouseUp:
 					if (_hasScaled)

@@ -19,6 +19,7 @@ namespace StrEditor.Core.Viewport {
 		public readonly LayerTransformTool LayerTransformTool = new LayerTransformTool();
 		public readonly GifTool GifTool = new GifTool();
 		public readonly UvTranslateTool UvTranslateTool = new UvTranslateTool();
+		public readonly BiasTool BiasTool = new BiasTool();
 
 		private FrameViewer _viewport;
 		public List<ToolHandle> Handles = new List<ToolHandle>();

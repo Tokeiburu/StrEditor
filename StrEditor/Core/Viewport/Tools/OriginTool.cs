@@ -57,13 +57,6 @@ namespace StrEditor.Core.Viewport.Tools {
 			_hasBeenModified = true;
 
 			DoEventRaw(viewport, args.DeltaX, args.DeltaY);
-
-			viewport.Controller.KeyFrameEditor.Execute(kfs => {
-				kfs.SetVertices(_renderer.Inter.Vertices);
-				kfs.SetOffsetX(_renderer.Inter.Offset.X);
-				kfs.SetOffsetY(_renderer.Inter.Offset.Y);
-			});
-
 			viewport.QuickUpdate();
 			return;
 		}
@@ -87,9 +80,11 @@ namespace StrEditor.Core.Viewport.Tools {
 			vertex.RotateZ(inter.Angle);
 
 			for (int i = 0; i < 4; i++) {
-				inter.Vertices[i] = _keyFrameCopy.Vertices[i] - vertex.X;
-				inter.Vertices[i + 4] = _keyFrameCopy.Vertices[i + 4] - vertex.Y;
+				inter.Positions[i] = _keyFrameCopy.Positions[i] - vertex.X;
+				inter.Positions[i + 4] = _keyFrameCopy.Positions[i + 4] - vertex.Y;
 			}
+
+			_kfe.OnValueChanged(KeyFrameValueType.OffsetXY, KeyFrameValueType.Points);
 		}
 
 		public void End(FrameViewer viewport, FrameViewerEventArgs args) {
@@ -98,7 +93,7 @@ namespace StrEditor.Core.Viewport.Tools {
 
 			InterpolatedKeyFrame.ConvertToFrame(inter, _str, false);
 			_str.Commands.Begin();
-			_str.Commands.SetVertices(_renderer.LayerIndex, inter.KeyIndex, inter.Vertices);
+			_str.Commands.SetPositions(_renderer.LayerIndex, inter.KeyIndex, inter.Positions);
 			_str.Commands.SetOffset(_renderer.LayerIndex, inter.KeyIndex, inter.Offset.X, inter.Offset.Y);
 			_str.Commands.End();
 		}

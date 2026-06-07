@@ -49,17 +49,17 @@ namespace StrEditor.Core.Viewport.Renderers {
 				return;
 			}
 
-			List<Vertex> vertices = new List<Vertex>();
+			List<Vertex> positions = new List<Vertex>();
 
-			vertices.Add(new Vertex(new Vector3(-1.0f, -1.0f, 0.0f), new Vector2(0.0f, 0.0f)));
-			vertices.Add(new Vertex(new Vector3(1.0f, -1.0f, 0.0f), new Vector2(1.0f, 0.0f)));
-			vertices.Add(new Vertex(new Vector3(1.0f, 1.0f, 0.0f), new Vector2(1.0f, 1.0f)));
-			vertices.Add(new Vertex(new Vector3(1.0f, 1.0f, 0.0f), new Vector2(1.0f, 1.0f)));
-			vertices.Add(new Vertex(new Vector3(-1.0f, 1.0f, 0.0f), new Vector2(0.0f, 1.0f)));
-			vertices.Add(new Vertex(new Vector3(-1.0f, -1.0f, 0.0f), new Vector2(0.0f, 0.0f)));
+			positions.Add(new Vertex(new Vector3(-1.0f, -1.0f, 0.0f), new Vector2(0.0f, 0.0f)));
+			positions.Add(new Vertex(new Vector3(1.0f, -1.0f, 0.0f), new Vector2(1.0f, 0.0f)));
+			positions.Add(new Vertex(new Vector3(1.0f, 1.0f, 0.0f), new Vector2(1.0f, 1.0f)));
+			positions.Add(new Vertex(new Vector3(1.0f, 1.0f, 0.0f), new Vector2(1.0f, 1.0f)));
+			positions.Add(new Vertex(new Vector3(-1.0f, 1.0f, 0.0f), new Vector2(0.0f, 1.0f)));
+			positions.Add(new Vertex(new Vector3(-1.0f, -1.0f, 0.0f), new Vector2(0.0f, 0.0f)));
 
 			_ri.BindVao();
-			_ri.Vertices = vertices;
+			_ri.Vertices = positions;
 			if (_ri.Vbo == null) {
 				_ri.Vbo = new Vbo();
 			}

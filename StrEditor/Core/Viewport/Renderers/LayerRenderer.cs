@@ -126,14 +126,39 @@ namespace StrEditor.Core.Viewport.Renderers {
 			Shader.Use();
 			Shader.SetVector4("color", new Vector4(Inter.Color[0] / 255f, Inter.Color[1] / 255f, Inter.Color[2] / 255f, Inter.Color[3] / 255f));
 
-			SetPosition(0, Inter.Vertices[2], -Inter.Vertices[6]);
-			SetPosition(1, Inter.Vertices[1], -Inter.Vertices[5]);
-			SetPosition(2, Inter.Vertices[0], -Inter.Vertices[4]);
-			SetPosition(3, Inter.Vertices[3], -Inter.Vertices[7]);
-			SetUV(0, Inter.TextCoords[0] + Inter.TextCoords[2], Inter.TextCoords[3] + Inter.TextCoords[1]);
-			SetUV(1, Inter.TextCoords[0] + Inter.TextCoords[2], Inter.TextCoords[1]);
-			SetUV(2, Inter.TextCoords[0], Inter.TextCoords[1]);
-			SetUV(3, Inter.TextCoords[0], Inter.TextCoords[3] + Inter.TextCoords[1]);
+			SetPosition(0, Inter.Positions[2], -Inter.Positions[6]);
+			SetPosition(1, Inter.Positions[1], -Inter.Positions[5]);
+			SetPosition(2, Inter.Positions[0], -Inter.Positions[4]);
+			SetPosition(3, Inter.Positions[3], -Inter.Positions[7]);
+			var uv0x = Inter.UVs[0];
+			var uv0y = Inter.UVs[1];
+			var uv1x = Inter.UVs[2];
+			var uv1y = Inter.UVs[3];
+
+			if (_texturesHash != Controller.Str.Layers[_layerIndex].TexturesHash) {
+				_loadTextures(viewport);
+			}
+
+			Texture texture = null;
+
+			if (Inter.TextureIndex >= 0 && Inter.TextureIndex < _textures.Count) {
+				texture = _textures[Inter.TextureIndex];
+
+				if (texture != null && texture.RequiresPoTAdjust) {
+					// The client uses a power of two texture buffer, so we emulate that.
+					var sx = texture.Width / (float)texture.PotWidth;
+					var sy = texture.Height / (float)texture.PotHeight;
+					uv0x *= sx;
+					uv0y *= sy;
+					uv1x *= sx;
+					uv1y *= sy;
+				}
+			}
+			
+			SetUV(0, uv0x + uv1x, uv1y + uv0y);
+			SetUV(1, uv0x + uv1x, uv0y);
+			SetUV(2, uv0x, uv0y);
+			SetUV(3, uv0x, uv1y + uv0y);
 
 			// This is a custom property, it's not part of the STR structure.
 			// It is used to preview scaling changes through the Viewport.
@@ -151,22 +176,20 @@ namespace StrEditor.Core.Viewport.Renderers {
 			if (!render)
 				return;
 
-			if (_texturesHash != Controller.Str.Layers[_layerIndex].TexturesHash) {
-				_loadTextures(viewport);
-			}
-
-			if (Inter.TextureIndex < 0 || Inter.TextureIndex >= _textures.Count)
-				return;
-
-			var texture = _textures[Inter.TextureIndex];
-
 			if (texture == null)
 				return;
+
+			if (texture.IsDithered) {
+				Shader.SetFloat("cutoff", texture.Cutoff / 255f);
+			}
+			else {
+				Shader.SetFloat("cutoff", 0f);
+			}
 
 			texture.Bind();
 
 			GL.Enable(EnableCap.Blend);
-			GL.BlendFunc(GLHelper.GetOpenGlBlendFromDirectXSrc(Inter.SourceAlpha), GLHelper.GetOpenGlBlendFromDirectXDest(Inter.DestinationAlpha));
+			GL.BlendFunc(GLHelper.GetOpenGlBlendFromDirectXSrc(Inter.BlendSrc), GLHelper.GetOpenGlBlendFromDirectXDest(Inter.BlendDst));
 
 			Shader.SetMatrix4("m", ref Model);
 			_ri.BindVao();
@@ -174,16 +197,16 @@ namespace StrEditor.Core.Viewport.Renderers {
 		}
 
 		public void UpdatePreviewScalingData() {
-			float[] vertices = new float[8];
+			float[] positions = new float[8];
 			float x = 0;
 			float y = 0;
 			TkVector2[] points = new TkVector2[4];
 
 			for (int i = 0; i < 4; i++) {
-				x += Inter.Vertices[i];
-				y += Inter.Vertices[i + 4];
+				x += Inter.Positions[i];
+				y += Inter.Positions[i + 4];
 
-				points[i] = new TkVector2(Inter.Vertices[i], Inter.Vertices[i + 4]);
+				points[i] = new TkVector2(Inter.Positions[i], Inter.Positions[i + 4]);
 			}
 
 			x /= 4;
@@ -198,14 +221,14 @@ namespace StrEditor.Core.Viewport.Renderers {
 
 				p += m;
 
-				vertices[i] = p.X;
-				vertices[i + 4] = p.Y;
+				positions[i] = p.X;
+				positions[i + 4] = p.Y;
 			}
 
-			SetPosition(0, vertices[2], -vertices[6]);
-			SetPosition(1, vertices[1], -vertices[5]);
-			SetPosition(2, vertices[0], -vertices[4]);
-			SetPosition(3, vertices[3], -vertices[7]);
+			SetPosition(0, positions[2], -positions[6]);
+			SetPosition(1, positions[1], -positions[5]);
+			SetPosition(2, positions[0], -positions[4]);
+			SetPosition(3, positions[3], -positions[7]);
 		}
 
 		public override void Unload() {
@@ -234,10 +257,10 @@ namespace StrEditor.Core.Viewport.Renderers {
 			
 			Vector4[] points = new Vector4[4];
 
-			points[0] = new Vector4(Inter.Vertices[2], -Inter.Vertices[6], 0, 0);
-			points[1] = new Vector4(Inter.Vertices[1], -Inter.Vertices[5], 0, 0);
-			points[2] = new Vector4(Inter.Vertices[0], -Inter.Vertices[4], 0, 0);
-			points[3] = new Vector4(Inter.Vertices[3], -Inter.Vertices[7], 0, 0);
+			points[0] = new Vector4(Inter.Positions[2], -Inter.Positions[6], 0, 0);
+			points[1] = new Vector4(Inter.Positions[1], -Inter.Positions[5], 0, 0);
+			points[2] = new Vector4(Inter.Positions[0], -Inter.Positions[4], 0, 0);
+			points[3] = new Vector4(Inter.Positions[3], -Inter.Positions[7], 0, 0);
 
 			Vector4 trans = new Vector4(Model[3, 0], Model[3, 1], 0, 0);
 

@@ -6,6 +6,7 @@
              xmlns:wpf="clr-namespace:StrEditor.WPF"
              xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
              xmlns:styles="clr-namespace:TokeiLibrary.WPF.Styles;assembly=TokeiLibrary"
+             xmlns:TokeiLibrary="clr-namespace:TokeiLibrary;assembly=TokeiLibrary"
              xmlns:sliders="clr-namespace:ColorPicker.Sliders;assembly=ColorPicker"
              xmlns:local="clr-namespace:StrEditor.Core.KeyframeEditor"
              mc:Ignorable="d" SnapsToDevicePixels="True"
@@ -49,10 +50,10 @@
 		<wpf:QuickColorSelector InnerMargin="1" Height="22" Margin="2 2 2 2" x:Name="_qcsKeyFrameColor" Grid.Column="1" Grid.Row="1" Width="77" HorizontalAlignment="Left" ColorChanged="_qcsKeyFrameColor_ColorChanged" />
         <Grid Grid.Row="1" Grid.Column="2">
             <DockPanel HorizontalAlignment="Left">
-				<TextBox Name="_tbColorR" Margin="3 3 0 3" Width="43" TextChanged="_tbColor_TextChanged" />
-                <TextBox Name="_tbColorG" Margin="-1 3 0 3" Width="43" TextChanged="_tbColor_TextChanged" />
-                <TextBox Name="_tbColorB" Margin="-1 3 0 3" Width="43" TextChanged="_tbColor_TextChanged" />
-                <TextBox Name="_tbColorA" Margin="-1 3 3 3" Width="43" TextChanged="_tbColor_TextChanged" />
+				<TextBox Name="_tbColorR" Margin=" 3 3 0 3" Width="43" TextChanged="_tbColor_TextChanged" VerticalContentAlignment="Center" />
+                <TextBox Name="_tbColorG" Margin="-1 3 0 3" Width="43" TextChanged="_tbColor_TextChanged" VerticalContentAlignment="Center" />
+                <TextBox Name="_tbColorB" Margin="-1 3 0 3" Width="43" TextChanged="_tbColor_TextChanged" VerticalContentAlignment="Center" />
+                <TextBox Name="_tbColorA" Margin="-1 3 3 3" Width="43" TextChanged="_tbColor_TextChanged" VerticalContentAlignment="Center" />
             </DockPanel>
         </Grid>
         <Label Content="Blend" Grid.Row="2" Margin="3" Padding="0" VerticalAlignment="Center" />
@@ -97,19 +98,19 @@
 		</DockPanel>
 		<Label Name="_labelP1" Content="P1XY" Grid.Row="6" Margin="3" Padding="0" VerticalAlignment="Center" />
         <DockPanel Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" Grid.ColumnSpan="2">
-			<TextBox Name="_tbCoordsTLX" Margin="3 3 0 3" Width="50" TextChanged="_boxPos_TextChanged" />
-			<TextBox Name="_tbCoordsTLY" Margin="-1 3 0 3" Width="50" TextChanged="_boxPos_TextChanged" />
+			<TextBox Name="_tbPositionsTLX" Margin="3 3 0 3" Width="50" TextChanged="_boxPos_TextChanged" />
+			<TextBox Name="_tbPositionsTLY" Margin="-1 3 0 3" Width="50" TextChanged="_boxPos_TextChanged" />
             <TextBlock Name="_labelP2" Text="P2XY" Margin="3" Padding="0" VerticalAlignment="Center" Width="40" TextAlignment="Right" />
-			<TextBox Name="_tbCoordsTRX" Margin="3 3 0 3" Width="50" TextChanged="_boxPos_TextChanged" />
-			<TextBox Name="_tbCoordsTRY" Margin="-1 3 3 3" Width="50" TextChanged="_boxPos_TextChanged" />
+			<TextBox Name="_tbPositionsTRX" Margin="3 3 0 3" Width="50" TextChanged="_boxPos_TextChanged" />
+			<TextBox Name="_tbPositionsTRY" Margin="-1 3 3 3" Width="50" TextChanged="_boxPos_TextChanged" />
         </DockPanel>
         <Label Name="_labelP4" Content="P4XY" Grid.Row="7" Margin="3" Padding="0" VerticalAlignment="Center" />
 		<DockPanel Grid.Row="7" Grid.Column="1" HorizontalAlignment="Left" Grid.ColumnSpan="2">
-			<TextBox Name="_tbCoordsBLX" Margin="3 3 0 3" Width="50" TextChanged="_boxPos_TextChanged" />
-			<TextBox Name="_tbCoordsBLY" Margin="-1 3 0 3" Width="50" TextChanged="_boxPos_TextChanged" />
+			<TextBox Name="_tbPositionsBLX" Margin="3 3 0 3" Width="50" TextChanged="_boxPos_TextChanged" />
+			<TextBox Name="_tbPositionsBLY" Margin="-1 3 0 3" Width="50" TextChanged="_boxPos_TextChanged" />
 			<TextBlock Name="_labelP3" Text="P3XY" Margin="3" Padding="0" VerticalAlignment="Center" Width="40" TextAlignment="Right" />
-			<TextBox Name="_tbCoordsBRX" Margin="3 3 0 3" Width="50" TextChanged="_boxPos_TextChanged" />
-			<TextBox Name="_tbCoordsBRY" Margin="-1 3 3 3" Width="50" TextChanged="_boxPos_TextChanged" />
+			<TextBox Name="_tbPositionsBRX" Margin="3 3 0 3" Width="50" TextChanged="_boxPos_TextChanged" />
+			<TextBox Name="_tbPositionsBRY" Margin="-1 3 3 3" Width="50" TextChanged="_boxPos_TextChanged" />
 		</DockPanel>
 		<Label Name="_label" Content="Scale" Grid.Row="8" Margin="3" Padding="0" VerticalAlignment="Center" />
 		<DockPanel Grid.Row="8" Grid.Column="1" HorizontalAlignment="Left" Grid.ColumnSpan="3">
@@ -159,10 +160,12 @@
 			<Label Grid.Row="1" Grid.Column="0" Content="Anim" Margin="3" Padding="0" VerticalAlignment="Center" />
 			<DockPanel Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2">
 				<ComboBox Name="_cbAnimations" Width="100" Margin="3" HorizontalAlignment="Left" SelectionChanged="_cbAnimations_SelectionChanged">
-					<ComboBoxItem Content="Normal" />
-					<ComboBoxItem Content="Unknown" />
-					<ComboBoxItem Content="Texture (once)" />
-					<ComboBoxItem Content="Texture (loop)" />
+					<ComboBoxItem Content="Stop" />
+					<ComboBoxItem Content="Interpolation [Disabled]" IsEnabled="False" />
+					<ComboBoxItem Content="Loop once" />
+					<ComboBoxItem Content="Loop" />
+					<ComboBoxItem Content="Reverse loop" />
+					<ComboBoxItem Content="BiLoop [Disabled]" IsEnabled="False" />
 				</ComboBox>
 				<Label Content="Delay" Margin="3" Padding="0" VerticalAlignment="Center" />
 				<TextBox Name="_tbDelay" Margin="3" VerticalContentAlignment="Center" TextChanged="_tbDelay_TextChanged" />
@@ -193,11 +196,11 @@
 				<TextBox Name="_tbFps" Grid.Row="4" Grid.Column="1" Margin="3" Width="50" HorizontalAlignment="Left" TextChanged="_tbFps_TextChanged" />
 			</DockPanel>
 			<CheckBox Name="_isInterpolated" Grid.Row="0" Grid.Column="1" Margin="3" VerticalAlignment="Center" HorizontalAlignment="Left" Click="_isInterpolated_Click" />
-			<sliders:SliderColor Grid.Column="2" Grid.Row="1" x:Name="_sliderScale" Height="20" Margin="2" VerticalAlignment="Top" ValueChanged="_sliderScale_ValueChanged" />
-            <sliders:SliderColor Grid.Column="2" Grid.Row="2" x:Name="_sliderOffset" Height="20" Margin="2" VerticalAlignment="Top" ValueChanged="_sliderOffset_ValueChanged" />
-			<sliders:SliderColor Grid.Column="2" Grid.Row="3" x:Name="_sliderAngle" Height="20" Margin="2" VerticalAlignment="Top" ValueChanged="_sliderAngle_ValueChanged" />
+			<wpf:SimpleSlider x:Name="_sliderScale" Grid.Column="2" Grid.Row="1" Margin="2 0 2 0" ValueChanged="_sliderScale_ValueChanged" ValueDragStart="_slider_ValueDragStart" ValueDragEnd="_slider_ValueDragEnd" Minimum="-20" Maximum="20" Height="20" />
+			<wpf:SimpleSlider x:Name="_sliderOffset" Grid.Column="2" Grid.Row="2" Margin="2 0 2 0" ValueChanged="_sliderOffset_ValueChanged" ValueDragStart="_slider_ValueDragStart" ValueDragEnd="_slider_ValueDragEnd" Minimum="-20" Maximum="20" Height="20" />
+			<wpf:SimpleSlider x:Name="_sliderAngle" Grid.Column="2" Grid.Row="3" Margin="2 0 2 0" ValueChanged="_sliderAngle_ValueChanged" ValueDragStart="_slider_ValueDragStart" ValueDragEnd="_slider_ValueDragEnd" Minimum="-20" Maximum="20" Height="20" />
 			<Label Name="_labelBezierP1" Content="Bezier P1" Grid.Row="4" Margin="3" Padding="0" VerticalAlignment="Center" />
-            <DockPanel Name="_dockPanelBezier" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Grid.ColumnSpan="2">
+            <DockPanel Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Grid.ColumnSpan="2">
 				<TextBox Name="_tbBezierP1X" Margin="3 3 0 3" Width="50" TextChanged="_boxBezier_TextChanged" />
 				<TextBox Name="_tbBezierP1Y" Margin="-1 3 0 3" Width="50" TextChanged="_boxBezier_TextChanged" />
                 <TextBlock x:Name="_labelBezierP2" Text="Bezier P2" Margin="3" Padding="0" VerticalAlignment="Center" Width="50" TextAlignment="Right" />

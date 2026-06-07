@@ -64,9 +64,9 @@ namespace StrEditor.Core.TimelineEditor.Rendering {
 			DrawSegment segment;
 
 			if (end != null && begin.FrameIndex == end.FrameIndex - 1 &&
-				!(Math.Abs(begin.Bezier[0]) > 0.01 || Math.Abs(begin.Bezier[1]) > 0.01 || Math.Abs(begin.Bezier[2]) > 0.01 || Math.Abs(begin.Bezier[3]) > 0.01)) {
+				!(Math.Abs(begin.BezierPositions[0]) > 0.01 || Math.Abs(begin.BezierPositions[1]) > 0.01 || Math.Abs(begin.BezierPositions[2]) > 0.01 || Math.Abs(begin.BezierPositions[3]) > 0.01)) {
 				if (previousFrameIndex == begin.FrameIndex - 1 &&
-					!(Math.Abs(previous.Bezier[0]) > 0.01 || Math.Abs(previous.Bezier[1]) > 0.01 || Math.Abs(previous.Bezier[2]) > 0.01 || Math.Abs(previous.Bezier[3]) > 0.01)) {
+					!(Math.Abs(previous.BezierPositions[0]) > 0.01 || Math.Abs(previous.BezierPositions[1]) > 0.01 || Math.Abs(previous.BezierPositions[2]) > 0.01 || Math.Abs(previous.BezierPositions[3]) > 0.01)) {
 					segments[segments.Count - 1].Length++;
 					return;
 				}
@@ -139,11 +139,21 @@ namespace StrEditor.Core.TimelineEditor.Rendering {
 
 			List<Brush> backgroundColors = new List<Brush>();
 
-			if ((begin.AnimationType == 2 || begin.AnimationType == 3) && length > 1 && begin.IsInterpolated) {
-				backgroundColors.Insert(0, StrEditorConfiguration.LayerEditorAnimationColorQuick.Get());
+			if (length > 1 && begin.IsInterpolated) {
+				switch (begin.AnimationType) {
+					case AnimationType.Stop:
+						break;
+					case AnimationType.Interpolation:
+					case AnimationType.Once:
+					case AnimationType.Loop:
+					case AnimationType.ReverseLoop:
+					case AnimationType.BiLoop:
+						backgroundColors.Insert(0, StrEditorConfiguration.LayerEditorAnimationColorQuick.Get());
+						break;
+				}
 			}
 			
-			if (Math.Abs(begin.Bezier[0]) > 0.01 || Math.Abs(begin.Bezier[1]) > 0.01 || Math.Abs(begin.Bezier[2]) > 0.01 || Math.Abs(begin.Bezier[3]) > 0.01) {
+			if (Math.Abs(begin.BezierPositions[0]) > 0.01 || Math.Abs(begin.BezierPositions[1]) > 0.01 || Math.Abs(begin.BezierPositions[2]) > 0.01 || Math.Abs(begin.BezierPositions[3]) > 0.01) {
 				backgroundColors.Insert(0, StrEditorConfiguration.LayerEditorBezierColorQuick.Get());
 			}
 			else if (begin.IsInterpolated && (begin.AngleBias != 0 || begin.ScaleBias != 0 || begin.OffsetBias != 0)) {

@@ -331,7 +331,7 @@ namespace StrEditor.Core.TimelineEditor.Logic {
 					return;
 
 				var str = _controller.Str;
-				str.Commands.ChangeTextures(layerIndexDst, str.Layers[layerIndexSrc].TextureNames);
+				str.Commands.SetTextures(layerIndexDst, str.Layers[layerIndexSrc].TextureNames);
 			}
 			catch (Exception err) {
 				ErrorHandler.HandleException(err);

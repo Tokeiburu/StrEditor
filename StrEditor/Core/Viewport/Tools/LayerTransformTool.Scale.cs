@@ -7,46 +7,6 @@ using GrfToWpfBridge;
 
 namespace StrEditor.Core.Viewport.Tools {
 	public partial class LayerTransformTool {
-		public void UpdateKeyFrameScalingData(FrameViewer viewport) {
-			if (_keyFrameCopy == null) return;
-
-			var oriKeyFrame = _keyFrameCopy;
-			var newKeyFrame = _renderer.Inter;
-
-			float[] vertices = new float[8];
-			float x = 0;
-			float y = 0;
-			TkVector2[] points = new TkVector2[4];
-
-			for (int i = 0; i < 4; i++) {
-				x += oriKeyFrame.Vertices[i];
-				y += oriKeyFrame.Vertices[i + 4];
-
-				points[i] = new TkVector2(oriKeyFrame.Vertices[i], oriKeyFrame.Vertices[i + 4]);
-			}
-
-			x /= 4;
-			y /= 4;
-
-			TkVector2 m = new TkVector2(x, y);
-
-			for (int i = 0; i < 4; i++) {
-				TkVector2 p = (points[i] - m);
-				p.X *= newKeyFrame.Scale.X;
-				p.Y *= newKeyFrame.Scale.Y;
-
-				p += m;
-
-				vertices[i] = p.X;
-				vertices[i + 4] = p.Y;
-			}
-
-			viewport.Controller.KeyFrameEditor.Execute(kfs => {
-				kfs.SetVertices(vertices);
-				//kfs.UpdateScale(vertices);
-			});
-		}
-
 		public void DoScale(FrameViewer viewport, FrameViewerEventArgs args) {
 			Point current = new Point(args.MouseArgs.Location.X, args.MouseArgs.Y);
 			Point oldPositionVertex = new Point(args.Start.X, args.Start.Y);
@@ -67,8 +27,8 @@ namespace StrEditor.Core.Viewport.Tools {
 			TkVector2 center = new TkVector2();
 
 			for (int i = 0; i < 4; i++) {
-				center.X += inter.Vertices[i];
-				center.Y += inter.Vertices[i + 4];
+				center.X += inter.Positions[i];
+				center.Y += inter.Positions[i + 4];
 			}
 
 			center /= 4;
@@ -100,6 +60,8 @@ namespace StrEditor.Core.Viewport.Tools {
 				_favoriteOrientation = null;
 				DoScaleRaw(viewport, diffVector, deltaX, deltaY);
 			}
+
+			_kfe.OnValueChanged(KeyFrameValueType.Points);
 		}
 
 		public void DoScaleRaw(double scale) {
@@ -109,10 +71,10 @@ namespace StrEditor.Core.Viewport.Tools {
 			double scaleX;
 			double scaleY;
 
-			TkVector2 a = new TkVector2(inter.Vertices[2], -inter.Vertices[6]);
-			TkVector2 b = new TkVector2(inter.Vertices[1], -inter.Vertices[5]);
-			TkVector2 c = new TkVector2(inter.Vertices[0], -inter.Vertices[4]);
-			TkVector2 d = new TkVector2(inter.Vertices[3], -inter.Vertices[7]);
+			TkVector2 a = new TkVector2(inter.Positions[2], -inter.Positions[6]);
+			TkVector2 b = new TkVector2(inter.Positions[1], -inter.Positions[5]);
+			TkVector2 c = new TkVector2(inter.Positions[0], -inter.Positions[4]);
+			TkVector2 d = new TkVector2(inter.Positions[3], -inter.Positions[7]);
 
 			double width = ((a + b) / 2 - (c + d) / 2).Length;
 			double height = ((c + b) / 2 - (a + d) / 2).Length;
@@ -128,6 +90,7 @@ namespace StrEditor.Core.Viewport.Tools {
 
 			inter.Scale.X = (float)scaleX;
 			inter.Scale.Y = (float)scaleY;
+			_kfe.OnValueChanged(KeyFrameValueType.Points);
 		}
 
 		public void DoScaleRaw(FrameViewer viewport, TkVector2 diffVector, double deltaX, double deltaY) {
@@ -154,10 +117,10 @@ namespace StrEditor.Core.Viewport.Tools {
 			double scaleX;
 			double scaleY;
 
-			TkVector2 a = new TkVector2(inter.Vertices[2], -inter.Vertices[6]);
-			TkVector2 b = new TkVector2(inter.Vertices[1], -inter.Vertices[5]);
-			TkVector2 c = new TkVector2(inter.Vertices[0], -inter.Vertices[4]);
-			TkVector2 d = new TkVector2(inter.Vertices[3], -inter.Vertices[7]);
+			TkVector2 a = new TkVector2(inter.Positions[2], -inter.Positions[6]);
+			TkVector2 b = new TkVector2(inter.Positions[1], -inter.Positions[5]);
+			TkVector2 c = new TkVector2(inter.Positions[0], -inter.Positions[4]);
+			TkVector2 d = new TkVector2(inter.Positions[3], -inter.Positions[7]);
 
 			double width = ((a + b) / 2 - (c + d) / 2).Length;
 			double height = ((c + b) / 2 - (a + d) / 2).Length;
@@ -183,6 +146,7 @@ namespace StrEditor.Core.Viewport.Tools {
 
 			inter.Scale.X = (float)scaleX;
 			inter.Scale.Y = (float)scaleY;
+			_kfe.OnValueChanged(KeyFrameValueType.Points);
 		}
 
 		public void EndScale() {

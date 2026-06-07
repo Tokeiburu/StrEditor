@@ -90,26 +90,26 @@ namespace StrEditor.Core.Viewport.Renderers {
 			}
 		}
 
-		private void _drawBezier(LayerRenderer component) {
-			var baseKeyIndex = component.Inter.KeyIndex;
-			var keyFrame0 = _str[_kfe.SelectedLayerIndex, component.Inter.KeyIndex];
+		private void _drawBezier(LayerRenderer renderer) {
+			var baseKeyIndex = renderer.Inter.KeyIndex;
+			var keyFrame0 = _str[_kfe.SelectedLayerIndex, renderer.Inter.KeyIndex];
 
-			if (_im.IsToolActive(_im.BezierTool, _im.OriginTool, _im.LayerTransformTool)) {
-				keyFrame0 = component.Inter.ToKeyFrame();
+			if (_im.IsToolActive(_im.BezierTool, _im.OriginTool, _im.LayerTransformTool, _im.BiasTool)) {
+				keyFrame0 = renderer.Inter.ToKeyFrame();
 			}
 
-			if (Math.Abs(keyFrame0.Bezier[0]) > 0.05 ||
-				Math.Abs(keyFrame0.Bezier[1]) > 0.05 ||
-				Math.Abs(keyFrame0.Bezier[2]) > 0.05 ||
-				Math.Abs(keyFrame0.Bezier[3]) > 0.05) {
+			if (Math.Abs(keyFrame0.BezierPositions[0]) > 0.05 ||
+				Math.Abs(keyFrame0.BezierPositions[1]) > 0.05 ||
+				Math.Abs(keyFrame0.BezierPositions[2]) > 0.05 ||
+				Math.Abs(keyFrame0.BezierPositions[3]) > 0.05) {
 				List<Point> bezPoints = new List<Point>(3);
 				bezPoints.Add(new Point());
 				bezPoints.Add(new Point());
 				bezPoints.Add(new Point());
 
 				bezPoints[1] = new Point(keyFrame0.Offset.X - Str.OffsetX, -(keyFrame0.Offset.Y - Str.OffsetY));
-				bezPoints[0] = new Point(bezPoints[1].X + keyFrame0.Bezier[0], bezPoints[1].Y - keyFrame0.Bezier[1]);
-				bezPoints[2] = new Point(bezPoints[1].X + keyFrame0.Bezier[2], bezPoints[1].Y - keyFrame0.Bezier[3]);
+				bezPoints[0] = new Point(bezPoints[1].X + keyFrame0.BezierPositions[0], bezPoints[1].Y - keyFrame0.BezierPositions[1]);
+				bezPoints[2] = new Point(bezPoints[1].X + keyFrame0.BezierPositions[2], bezPoints[1].Y - keyFrame0.BezierPositions[3]);
 
 				for (int i = 0; i < 2; i++) {
 					ShapeRenderer.DrawLine(bezPoints[i], bezPoints[i + 1], StrEditorConfiguration.BezierLineQuick.Color);
@@ -136,7 +136,7 @@ namespace StrEditor.Core.Viewport.Renderers {
 
 			StrKeyFrame currentKeyFrame = _str[_kfe.SelectedLayerIndex, renderer.Inter.KeyIndex];
 
-			if (_im.IsToolActive(_im.BezierTool, _im.OriginTool, _im.LayerTransformTool)) {
+			if (_im.IsToolActive(_im.BezierTool, _im.OriginTool, _im.LayerTransformTool, _im.BiasTool)) {
 				currentKeyFrame = renderer.Inter.ToKeyFrame();
 			}
 

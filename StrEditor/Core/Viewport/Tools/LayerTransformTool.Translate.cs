@@ -17,11 +17,6 @@ namespace StrEditor.Core.Viewport.Tools {
 			if (DoTranslateRaw(viewport, args.DeltaX, args.DeltaY)) {
 				_hasTranslated = true;
 				var inter = _renderer.Inter;
-
-				viewport.Controller.KeyFrameEditor.Execute(kfs => {
-					kfs.SetOffsetX(inter.Offset.X);
-					kfs.SetOffsetY(inter.Offset.Y);
-				});
 			}
 		}
 
@@ -57,6 +52,7 @@ namespace StrEditor.Core.Viewport.Tools {
 				}
 			}
 
+			_kfe.OnValueChanged(KeyFrameValueType.OffsetXY);
 			return true;
 		}
 

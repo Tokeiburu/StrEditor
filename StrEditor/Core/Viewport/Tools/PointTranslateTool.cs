@@ -65,13 +65,13 @@ namespace StrEditor.Core.Viewport {
 
 			DoEventRaw(point, viewport, args.DeltaX, args.DeltaY);
 
-			try {
-				viewport.Controller.KeyFrameEditor.DisableEvents();
-				viewport.Controller.KeyFrameEditor.SetVertices(_renderer.Inter.Vertices);
-			}
-			finally {
-				viewport.Controller.KeyFrameEditor.EnableEvents();
-			}
+			//try {
+			//	viewport.Controller.KeyFrameEditor.DisableEvents();
+			//	viewport.Controller.KeyFrameEditor.SetPositions(_renderer.Inter.Positions);
+			//}
+			//finally {
+			//	viewport.Controller.KeyFrameEditor.EnableEvents();
+			//}
 
 			viewport.QuickUpdate();
 		}
@@ -87,13 +87,15 @@ namespace StrEditor.Core.Viewport {
 			TkVector2 vertex = new TkVector2(diffX, diffY);
 			vertex.RotateZ(_renderer.Inter.Angle);
 
-			_renderer.Inter.Vertices[point] = _keyFrameCopy.Vertices[point] + vertex.X;
-			_renderer.Inter.Vertices[point + 4] = _keyFrameCopy.Vertices[point + 4] + vertex.Y;
+			_renderer.Inter.Positions[point] = _keyFrameCopy.Positions[point] + vertex.X;
+			_renderer.Inter.Positions[point + 4] = _keyFrameCopy.Positions[point + 4] + vertex.Y;
 
 			if (StrEditorConfiguration.Snap > 0) {
-				_renderer.Inter.Vertices[point] = (float)(StrEditorConfiguration.Snap * Math.Round(_renderer.Inter.Vertices[point] / StrEditorConfiguration.Snap, 0, MidpointRounding.ToEven));
-				_renderer.Inter.Vertices[point + 4] = (float)(StrEditorConfiguration.Snap * Math.Round(_renderer.Inter.Vertices[point + 4] / StrEditorConfiguration.Snap, 0, MidpointRounding.ToEven));
+				_renderer.Inter.Positions[point] = (float)(StrEditorConfiguration.Snap * Math.Round(_renderer.Inter.Positions[point] / StrEditorConfiguration.Snap, 0, MidpointRounding.ToEven));
+				_renderer.Inter.Positions[point + 4] = (float)(StrEditorConfiguration.Snap * Math.Round(_renderer.Inter.Positions[point + 4] / StrEditorConfiguration.Snap, 0, MidpointRounding.ToEven));
 			}
+
+			_kfe.OnValueChanged(KeyFrameValueType.P1 + point);
 		}
 
 		public void DoEventRaw(FrameViewer viewport, double deltaX, double deltaY, bool applyScale = true) {
@@ -108,9 +110,11 @@ namespace StrEditor.Core.Viewport {
 			vertex.RotateZ(_renderer.Inter.Angle);
 
 			for (int i = 0; i < 4; i++) {
-				_renderer.Inter.Vertices[i + 0] = _keyFrameCopy.Vertices[i + 0] + vertex.X;
-				_renderer.Inter.Vertices[i + 4] = _keyFrameCopy.Vertices[i + 4] + vertex.Y;
+				_renderer.Inter.Positions[i + 0] = _keyFrameCopy.Positions[i + 0] + vertex.X;
+				_renderer.Inter.Positions[i + 4] = _keyFrameCopy.Positions[i + 4] + vertex.Y;
 			}
+
+			_kfe.OnValueChanged(KeyFrameValueType.Points);
 		}
 
 		public void End() {
@@ -118,7 +122,7 @@ namespace StrEditor.Core.Viewport {
 
 			InterpolatedKeyFrame.ConvertToFrame(_renderer.Inter, _str);
 			_str.Commands.Begin();
-			_str.Commands.SetVertices(_renderer.LayerIndex, _renderer.Inter.KeyIndex, _renderer.Inter.Vertices);
+			_str.Commands.SetPositions(_renderer.LayerIndex, _renderer.Inter.KeyIndex, _renderer.Inter.Positions);
 			_str.Commands.End();
 		}
 	}

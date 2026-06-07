@@ -63,5 +63,13 @@ namespace StrEditor.Core.Viewport.Renderers {
 
 			_referenceTexture?.Unload();
 		}
+
+		public void Clear() {
+			foreach (var renderer in LayerRenderers) {
+				renderer?.Unload();
+			}
+
+			LayerRenderers.Clear();
+		}
 	}
 }

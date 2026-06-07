@@ -58,13 +58,13 @@ namespace StrEditor.Core.Viewport {
 
 			DoEventRaw(args.PointId, viewport, args.DeltaX, args.DeltaY);
 
-			try {
-				viewport.Controller.KeyFrameEditor.DisableEvents();
-				viewport.Controller.KeyFrameEditor.SetTextCoords(_renderer.Inter.TextCoords);
-			}
-			finally {
-				viewport.Controller.KeyFrameEditor.EnableEvents();
-			}
+			//try {
+			//	viewport.Controller.KeyFrameEditor.DisableEvents();
+			//	viewport.Controller.KeyFrameEditor.SetUVs(_renderer.Inter.UVs);
+			//}
+			//finally {
+			//	viewport.Controller.KeyFrameEditor.EnableEvents();
+			//}
 
 			viewport.QuickUpdate();
 		}
@@ -95,14 +95,16 @@ namespace StrEditor.Core.Viewport {
 			TkVector2 vertex = new TkVector2(diffX, diffY);
 			vertex.RotateZ(_renderer.Inter.Angle);
 
-			_renderer.Inter.TextCoords[2 * point + 0] = _keyFrameCopy.TextCoords[2 * point + 0] + vertex.X;
-			_renderer.Inter.TextCoords[2 * point + 1] = _keyFrameCopy.TextCoords[2 * point + 1] + vertex.Y;
+			_renderer.Inter.UVs[2 * point + 0] = _keyFrameCopy.UVs[2 * point + 0] + vertex.X;
+			_renderer.Inter.UVs[2 * point + 1] = _keyFrameCopy.UVs[2 * point + 1] + vertex.Y;
 
 			if (StrEditorConfiguration.Snap > 0) {
 				var snap = 1d / StrEditorConfiguration.Snap * 0.1d;
-				_renderer.Inter.TextCoords[2 * point + 0] = (float)(snap * Math.Round(_renderer.Inter.TextCoords[2 * point + 0] / snap, 0, MidpointRounding.ToEven));
-				_renderer.Inter.TextCoords[2 * point + 1] = (float)(snap * Math.Round(_renderer.Inter.TextCoords[2 * point + 1] / snap, 0, MidpointRounding.ToEven));
+				_renderer.Inter.UVs[2 * point + 0] = (float)(snap * Math.Round(_renderer.Inter.UVs[2 * point + 0] / snap, 0, MidpointRounding.ToEven));
+				_renderer.Inter.UVs[2 * point + 1] = (float)(snap * Math.Round(_renderer.Inter.UVs[2 * point + 1] / snap, 0, MidpointRounding.ToEven));
 			}
+
+			_kfe.OnValueChanged(KeyFrameValueType.UVs);
 		}
 
 		public void End() {
@@ -110,7 +112,7 @@ namespace StrEditor.Core.Viewport {
 
 			InterpolatedKeyFrame.ConvertToFrame(_renderer.Inter, _str);
 			_str.Commands.Begin();
-			_str.Commands.SetTextCoords(_renderer.LayerIndex, _renderer.Inter.KeyIndex, _renderer.Inter.TextCoords);
+			_str.Commands.SetUVs(_renderer.LayerIndex, _renderer.Inter.KeyIndex, _renderer.Inter.UVs);
 			_str.Commands.End();
 		}
 	}

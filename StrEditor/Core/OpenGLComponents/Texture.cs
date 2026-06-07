@@ -296,6 +296,7 @@ namespace StrEditor.Core.OpenGLComponents {
 		public TextureRenderMode RenderMode = TextureRenderMode.DefaultTexture;
 		public static bool EnableMipmap { get; set; }
 		public bool IsDithered { get; set; }
+		public byte Cutoff { get; set; }
 		public bool TransparencyFixed { get; set; }
 		public int Width;
 		public int Height;
@@ -375,6 +376,9 @@ namespace StrEditor.Core.OpenGLComponents {
 		}
 
 		public int Size { get; set; }
+		public int PotWidth;
+		public int PotHeight;
+		public bool RequiresPoTAdjust;
 
 		public void Reload() {
 			if (IsUnloaded)
@@ -389,6 +393,20 @@ namespace StrEditor.Core.OpenGLComponents {
 				OpenGLMemoryManager.AddTextureId(_id);
 				GL.BindTexture(TextureTarget.Texture2D, _id);
 
+				Size = Image.Pixels.Length;
+				Width = Image.Width;
+				Height = Image.Height;
+
+				if (RenderMode == TextureRenderMode.StrTexture) {
+					PotWidth = GLHelper.NextPowerOfTwo(Image.Width);
+					PotHeight = GLHelper.NextPowerOfTwo(Image.Height);
+
+					if (PotWidth != Width || PotHeight != Height) {
+						RequiresPoTAdjust = true;
+						Image.Margin(0, 0, PotWidth - Width, PotHeight - Height);
+					}
+				}
+
 				GCHandle pinnedArray = GCHandle.Alloc(Image.Pixels, GCHandleType.Pinned);
 				IntPtr pointer = pinnedArray.AddrOfPinnedObject();
 
@@ -398,9 +416,6 @@ namespace StrEditor.Core.OpenGLComponents {
 
 				pinnedArray.Free();
 				IsLoaded = true;
-				Size = Image.Pixels.Length;
-				Width = Image.Width;
-				Height = Image.Height;
 				Image = null;
 
 				GLHelper.OnLog(() => "Loaded: \"" + Resource + "\", Message: texID " + Id + ".");
@@ -431,6 +446,8 @@ namespace StrEditor.Core.OpenGLComponents {
 			byte bT = rT;
 
 			image.DitherAndChangePinkToBlack(rT, gT, bT, ditherDividerShift, ditherMultiplier);
+
+			Cutoff = gT;
 			IsDithered = true;
 		}
 
