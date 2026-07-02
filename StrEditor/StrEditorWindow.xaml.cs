@@ -200,6 +200,19 @@ namespace StrEditor {
 			Binder.Bind(_buttonScale, () => StrEditorConfiguration.DrawTranslationPoints, v => StrEditorConfiguration.DrawTranslationPoints = v, () => Controller.FrameViewer.QuickUpdate());
 			Binder.Bind(_buttonGroupEdit, () => StrEditorConfiguration.GroupEdit, v => StrEditorConfiguration.GroupEdit = v, () => Controller.FrameViewer.QuickUpdate());
 			Binder.Bind(_miDrawReferenceSprite, () => StrEditorConfiguration.DrawReferenceSprite, v => StrEditorConfiguration.DrawReferenceSprite = v, () => Controller.FrameViewer.QuickUpdate());
+
+			_miDrawPriority.SubmenuOpened += delegate {
+				_miDrawReferenceSpriteBack.IsChecked = !StrEditorConfiguration.DrawReferenceSpritePriority;
+				_miDrawReferenceSpriteFront.IsChecked = StrEditorConfiguration.DrawReferenceSpritePriority;
+			};
+			_miDrawReferenceSpriteBack.Click += delegate {
+				StrEditorConfiguration.DrawReferenceSpritePriority = !StrEditorConfiguration.DrawReferenceSpritePriority;
+				Controller.FrameViewer.QuickUpdate();
+			};
+			_miDrawReferenceSpriteFront.Click += delegate {
+				StrEditorConfiguration.DrawReferenceSpritePriority = !StrEditorConfiguration.DrawReferenceSpritePriority;
+				Controller.FrameViewer.QuickUpdate();
+			};
 		}
 
 		private void _initializeShortcuts() {

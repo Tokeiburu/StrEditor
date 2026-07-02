@@ -109,6 +109,13 @@ namespace StrEditor.ApplicationConfiguration {
 			set => _drawReferenceSprite.Set(value);
 		}
 
+		private static readonly BufferedProperty<bool> _drawReferenceSpritePriority = new BufferedProperty<bool>(ConfigAsker, "[StrEditor - DrawReferenceSpritePriority]", false, FormatConverters.BooleanConverter);
+
+		public static bool DrawReferenceSpritePriority {
+			get => _drawReferenceSpritePriority.Get();
+			set => _drawReferenceSpritePriority.Set(value);
+		}
+
 		#region Generic settings
 
 		public static int EncodingCodepage {
@@ -125,7 +132,7 @@ namespace StrEditor.ApplicationConfiguration {
 
 		#region Program's internal configuration and information
 
-		public static string PublicVersion => "1.1.3";
+		public static string PublicVersion => "1.1.4";
 		public static string Author => "Tokeiburu";
 		public static string ProgramName => "Str Editor";
 		public static string RealVersion => Assembly.GetEntryAssembly().GetName().Version.ToString();

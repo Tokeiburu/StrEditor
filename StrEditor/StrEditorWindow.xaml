@@ -92,6 +92,10 @@
 					<Label Content="View" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="-5 0 -5 0" />
 				</MenuItem.Header>
 				<Styles:TkMenuItem Name="_miDrawReferenceSprite" Header="Draw reference sprite" />
+				<MenuItem Name="_miDrawPriority" Header="Reference layer priority">
+					<Styles:TkMenuItem Name="_miDrawReferenceSpriteBack" Header="Back" />
+					<Styles:TkMenuItem Name="_miDrawReferenceSpriteFront" Header="Front" />
+				</MenuItem>
 			</MenuItem>
 			<MenuItem>
                 <MenuItem.Header>

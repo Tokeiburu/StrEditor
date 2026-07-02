@@ -1,5 +1,6 @@
 ﻿using GRF.Image;
 using OpenTK;
+using OpenTK.Graphics.OpenGL;
 using StrEditor.ApplicationConfiguration;
 using StrEditor.Core.OpenGLComponents;
 using System.Collections.Generic;
@@ -29,7 +30,9 @@ namespace StrEditor.Core.Viewport.Renderers {
 				if (_referenceTexture == null) {
 					_referenceTexture = new Texture("APP_reference_sprite", new GrfImage(ApplicationManager.GetResource("actor_dummy.png")), true, TextureRenderMode.NearestNeighbor);
 				}
+			}
 
+			if (StrEditorConfiguration.DrawReferenceSprite && StrEditorConfiguration.DrawReferenceSpritePriority == false) {
 				ShapeRenderer.DrawImage(viewport, Shader, -1, 40, _referenceTexture, _referenceTexture.Width, _referenceTexture.Height, new Vector4(1, 1, 1, 1));
 			}
 
@@ -52,6 +55,11 @@ namespace StrEditor.Core.Viewport.Renderers {
 				LayerRenderers[lidx].Unload();
 				LayerRenderers.RemoveAt(lidx);
 				lidx--;
+			}
+
+			if (StrEditorConfiguration.DrawReferenceSprite && StrEditorConfiguration.DrawReferenceSpritePriority == true) {
+				GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+				ShapeRenderer.DrawImage(viewport, Shader, -1, 40, _referenceTexture, _referenceTexture.Width, _referenceTexture.Height, new Vector4(1, 1, 1, 1));
 			}
 		}
 
